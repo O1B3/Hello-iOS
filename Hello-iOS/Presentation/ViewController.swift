@@ -15,4 +15,12 @@ class ViewController: BaseViewController<ViewReactor> {
     print("hello world")
     view.backgroundColor = .red
   }
+  init(reactor: ViewReactor) {
+    super.init(nibName: nil, bundle: nil)
+    self.reactor = reactor
+  }
+
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
 }
