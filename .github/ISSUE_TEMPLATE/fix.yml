@@ -1,0 +1,23 @@
+name: 🚨 Fix
+description: 버그 수정
+title: "🚨 Fix: "
+labels: ["🚨 Fix"]
+body:
+  - type: input
+    id: branch
+    attributes:
+      label: 📍 브랜치 이름
+      description: 작업할 브랜치 이름을 명확하게 작성해주세요 예) Fix/#이슈번호-작업명
+      placeholder: 예) Fix/#이슈번호-작업명
+    validations:
+      required: true
+  - type: input
+    id: summary
+    attributes:
+      label: ✨ 간단 요약
+      placeholder: 어떤 버그를 수정하나요?
+  - type: textarea
+    id: details
+    attributes:
+      label: ✏️ 상세 설명
+      placeholder: 자세한 설명을 적어주세요
