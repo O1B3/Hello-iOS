@@ -1,5 +1,5 @@
 //
-//  ViewReactor.swift
+//  InterviewReactor.swift
 //  Hello-iOS
 //
 //  Created by 이태윤 on 8/6/25.
@@ -7,10 +7,10 @@
 import ReactorKit
 import RxSwift
 
-final class ViewReactor: BaseReactor<
-ViewReactor.Action,
-ViewReactor.Mutation,
-ViewReactor.State
+final class InterviewReactor: BaseReactor<
+InterviewReactor.Action,
+InterviewReactor.Mutation,
+InterviewReactor.State
 > {
   // 사용자 액션 정의 (사용자의 의도)
   enum Action {}
