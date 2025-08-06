@@ -16,13 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     guard let windowScene = (scene as? UIWindowScene) else { return }
 
     window = UIWindow(windowScene: windowScene)
-
-    let container = DIContainer.shared
-    container.register(ViewController(reactor: ViewReactor()))
-    let rootVC: ViewController = container.resolve()
-    let navController = UINavigationController(rootViewController: rootVC)
-
-    window?.rootViewController = navController
+    window?.rootViewController = makeTabBarController()
     window?.makeKeyAndVisible()
   }
 
@@ -57,3 +51,47 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 }
 
+extension SceneDelegate {
+  func makeTabBarController() -> UITabBarController {
+    let container = DIContainer.shared
+    container.register(ViewController(reactor: ViewReactor()))
+
+    let interviewVC: ViewController = container.resolve()
+    let myPageVC = UIViewController()
+    let wordBookVC = UIViewController()
+    let tabBarController = UITabBarController()
+
+    wordBookVC.tabBarItem = UITabBarItem(
+      title: "단어장",
+      image: UIImage(systemName: "book"),
+      tag: 0
+    )
+
+    interviewVC.tabBarItem = UITabBarItem(
+      title: "면접보기",
+      image: UIImage(systemName: "magnifyingglass"),
+      tag: 1
+    )
+
+    myPageVC.tabBarItem = UITabBarItem(
+      title: "마이페이지",
+      image: UIImage(systemName: "person"),
+      tag: 2
+    )
+
+    tabBarController.viewControllers = [wordBookVC, interviewVC, myPageVC].map {
+      UINavigationController(rootViewController: $0)
+    }
+    tabBarController.tabBar.tintColor = .main
+
+    /// 하단 탭바의 경계션 표현
+    let appearance = UITabBarAppearance()
+
+    appearance.configureWithOpaqueBackground()
+    appearance.shadowColor = .lightGray
+    tabBarController.tabBar.standardAppearance = appearance
+    tabBarController.tabBar.scrollEdgeAppearance = tabBarController.tabBar.standardAppearance
+
+    return tabBarController
+  }
+}
