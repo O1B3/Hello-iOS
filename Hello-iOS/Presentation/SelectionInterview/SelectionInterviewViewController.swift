@@ -1,5 +1,5 @@
 //
-//  InterviewRoomViewController.swift
+//  SelectionInterviewViewController.swift
 //  Hello-iOS
 //
 //  Created by 이태윤 on 8/7/25.
@@ -9,16 +9,17 @@ import ReactorKit
 import RxCocoa
 import Then
 import SnapKit
-class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
+
+class SelectionInterviewViewController: BaseViewController<SelectionInterviewReactor> {
 
   override func viewDidLoad() {
     super.viewDidLoad()
     setUI()
     setConstraints()
-    view.backgroundColor = .red
+    view.backgroundColor = .blue
   }
 
-  init(reactor: InterviewRoomReactor) {
+  init(reactor: SelectionInterviewReactor) {
     super.init(nibName: nil, bundle: nil)
     self.reactor = reactor
   }
@@ -36,4 +37,3 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
   private func setConstraints() {
   }
 }
-
