@@ -1,5 +1,5 @@
 //
-//  ShadiwButton.swift
+//  ShadowButton.swift
 //  Hello-iOS
 //
 //  Created by 이태윤 on 8/7/25.
