@@ -18,7 +18,6 @@
 		E7E0608C2E42E6D90088BB28 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E7E0608B2E42E6D90088BB28 /* RealmSwift */; };
 		E7E0608F2E42E7240088BB28 /* ReactorKit in Frameworks */ = {isa = PBXBuildFile; productRef = E7E0608E2E42E7240088BB28 /* ReactorKit */; };
 		E7E060922E42E74C0088BB28 /* LookinServer in Frameworks */ = {isa = PBXBuildFile; productRef = E7E060912E42E74C0088BB28 /* LookinServer */; };
-		FE7F69CC2E4445990050B0DF /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = FE36346B2E444171001EF3A1 /* Realm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,19 +29,6 @@
 			remoteInfo = "Hello-iOS";
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		FE36346D2E444171001EF3A1 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		E7E060422E42E3C90088BB28 /* Hello-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Hello-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -94,11 +80,10 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FEF2DD6F2E44456E00A197C3 /* Frameworks */ = {
+		E7E060552E42E3CB0088BB28 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FE7F69CC2E4445990050B0DF /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,7 +95,6 @@
 			children = (
 				E7E060442E42E3C90088BB28 /* Hello-iOS */,
 				E7E0605B2E42E3CB0088BB28 /* Hello-iOSTests */,
-				FE36346A2E444171001EF3A1 /* Frameworks */,
 				E7E060432E42E3C90088BB28 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -122,13 +106,6 @@
 				E7E060582E42E3CB0088BB28 /* Hello-iOSTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		FE36346A2E444171001EF3A1 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -172,9 +149,8 @@
 			buildConfigurationList = E7E060702E42E3CB0088BB28 /* Build configuration list for PBXNativeTarget "Hello-iOSTests" */;
 			buildPhases = (
 				E7E060542E42E3CB0088BB28 /* Sources */,
+				E7E060552E42E3CB0088BB28 /* Frameworks */,
 				E7E060562E42E3CB0088BB28 /* Resources */,
-				FE36346D2E444171001EF3A1 /* Embed Frameworks */,
-				FEF2DD6F2E44456E00A197C3 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -186,8 +162,6 @@
 			);
 			name = "Hello-iOSTests";
 			packageProductDependencies = (
-				FE36346B2E444171001EF3A1 /* Realm */,
-				FE36346F2E444184001EF3A1 /* RealmSwift */,
 			);
 			productName = "Hello-iOSTests";
 			productReference = E7E060582E42E3CB0088BB28 /* Hello-iOSTests.xctest */;
@@ -649,16 +623,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E7E060902E42E74C0088BB28 /* XCRemoteSwiftPackageReference "LookinServer" */;
 			productName = LookinServer;
-		};
-		FE36346B2E444171001EF3A1 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E7E0608A2E42E6D90088BB28 /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		FE36346F2E444184001EF3A1 /* RealmSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E7E0608A2E42E6D90088BB28 /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = RealmSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
