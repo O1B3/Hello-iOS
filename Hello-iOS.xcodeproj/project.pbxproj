@@ -28,19 +28,11 @@
 			remoteGlobalIDString = E7E060412E42E3C90088BB28;
 			remoteInfo = "Hello-iOS";
 		};
-		E7E060632E42E3CB0088BB28 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E7E0603A2E42E3C90088BB28 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E7E060412E42E3C90088BB28;
-			remoteInfo = "Hello-iOS";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		E7E060422E42E3C90088BB28 /* Hello-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Hello-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7E060582E42E3CB0088BB28 /* Hello-iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Hello-iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E7E060622E42E3CB0088BB28 /* Hello-iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Hello-iOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -95,13 +87,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E7E0605F2E42E3CB0088BB28 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -119,7 +104,6 @@
 			children = (
 				E7E060422E42E3C90088BB28 /* Hello-iOS.app */,
 				E7E060582E42E3CB0088BB28 /* Hello-iOSTests.xctest */,
-				E7E060622E42E3CB0088BB28 /* Hello-iOSUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -183,26 +167,6 @@
 			productReference = E7E060582E42E3CB0088BB28 /* Hello-iOSTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		E7E060612E42E3CB0088BB28 /* Hello-iOSUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E7E060732E42E3CB0088BB28 /* Build configuration list for PBXNativeTarget "Hello-iOSUITests" */;
-			buildPhases = (
-				E7E0605E2E42E3CB0088BB28 /* Sources */,
-				E7E0605F2E42E3CB0088BB28 /* Frameworks */,
-				E7E060602E42E3CB0088BB28 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				E7E060642E42E3CB0088BB28 /* PBXTargetDependency */,
-			);
-			name = "Hello-iOSUITests";
-			packageProductDependencies = (
-			);
-			productName = "Hello-iOSUITests";
-			productReference = E7E060622E42E3CB0088BB28 /* Hello-iOSUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -217,10 +181,6 @@
 						CreatedOnToolsVersion = 16.4;
 					};
 					E7E060572E42E3CB0088BB28 = {
-						CreatedOnToolsVersion = 16.4;
-						TestTargetID = E7E060412E42E3C90088BB28;
-					};
-					E7E060612E42E3CB0088BB28 = {
 						CreatedOnToolsVersion = 16.4;
 						TestTargetID = E7E060412E42E3C90088BB28;
 					};
@@ -251,7 +211,6 @@
 			targets = (
 				E7E060412E42E3C90088BB28 /* Hello-iOS */,
 				E7E060572E42E3CB0088BB28 /* Hello-iOSTests */,
-				E7E060612E42E3CB0088BB28 /* Hello-iOSUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -265,13 +224,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E7E060562E42E3CB0088BB28 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E7E060602E42E3CB0088BB28 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -295,13 +247,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E7E0605E2E42E3CB0088BB28 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -309,11 +254,6 @@
 			isa = PBXTargetDependency;
 			target = E7E060412E42E3C90088BB28 /* Hello-iOS */;
 			targetProxy = E7E060592E42E3CB0088BB28 /* PBXContainerItemProxy */;
-		};
-		E7E060642E42E3CB0088BB28 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E7E060412E42E3C90088BB28 /* Hello-iOS */;
-			targetProxy = E7E060632E42E3CB0088BB28 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -537,38 +477,6 @@
 			};
 			name = Release;
 		};
-		E7E060742E42E3CB0088BB28 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.O1B3.Hello-iOSUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "Hello-iOS";
-			};
-			name = Debug;
-		};
-		E7E060752E42E3CB0088BB28 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.O1B3.Hello-iOSUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "Hello-iOS";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -595,15 +503,6 @@
 			buildConfigurations = (
 				E7E060712E42E3CB0088BB28 /* Debug */,
 				E7E060722E42E3CB0088BB28 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		E7E060732E42E3CB0088BB28 /* Build configuration list for PBXNativeTarget "Hello-iOSUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E7E060742E42E3CB0088BB28 /* Debug */,
-				E7E060752E42E3CB0088BB28 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
