@@ -11,7 +11,7 @@ class RealmMockInterviewGroup: Object {
   // 도메인 모델 → Realm 모델
   convenience init(from domain: MockInterviewGroup) {
     self.init()
-    self.id = domain.id.uuidString
+    self.id = domain.id
     self.date = domain.date
     self.records.append(objectsIn: domain.records.map { RealmMockInterviewRecord(from: $0) })
   }
@@ -19,7 +19,7 @@ class RealmMockInterviewGroup: Object {
   // Realm 모델 → 도메인 모델
   func toDomain() -> MockInterviewGroup {
     MockInterviewGroup(
-      id: UUID(uuidString: id) ?? UUID(),
+      id: id,
       date: date,
       records: records.map { $0.toDomain() }
     )

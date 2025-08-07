@@ -15,7 +15,7 @@ class RealmMockInterviewRecord: Object {
   convenience init(from domain: MockInterviewRecord) {
     self.init()
     self.id = domain.id
-    self.groupId = domain.groupId.uuidString
+    self.groupId = domain.groupId
     self.question = domain.question
     self.modelAnswer = domain.modelAnswer
     self.myAnswer = domain.myAnswer
@@ -26,7 +26,7 @@ class RealmMockInterviewRecord: Object {
   func toDomain() -> MockInterviewRecord {
     MockInterviewRecord(
       id: id,
-      groupId: UUID(uuidString: groupId) ?? UUID(),
+      groupId: groupId,
       question: question,
       modelAnswer: modelAnswer,
       myAnswer: myAnswer,
