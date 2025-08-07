@@ -77,7 +77,7 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
 
   private let micButton = UIButton(type: .system).then {
     let config = UIImage.SymbolConfiguration(pointSize: 40, weight: .medium)
-    $0.setImage(UIImage(systemName: "chevron.left", withConfiguration: config), for: .normal)
+    $0.setImage(UIImage(systemName: "mic", withConfiguration: config), for: .normal)
     $0.tintColor = .main
   }
 
@@ -144,10 +144,10 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
 
   }
   override func bind(reactor: InterviewRoomReactor) {
-    micButton.rx.tap
-      .map { reactor.Action. }
-      .bind(to: reactor.action)
-      .disposed(by: disposeBag)
+//    micButton.rx.tap
+//      .map { reactor.Action. }
+//      .bind(to: reactor.action)
+//      .disposed(by: disposeBag)
   }
 }
 

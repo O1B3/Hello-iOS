@@ -43,13 +43,6 @@
 			);
 			target = E7E060412E42E3C90088BB28 /* Hello-iOS */;
 		};
-		E9DAB2602E4373590084667D /* Exceptions for "Hello-iOS" folder in "Hello-iOSTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Resources/Config.xcconfig,
-			);
-			target = E7E060572E42E3CB0088BB28 /* Hello-iOSTests */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -57,7 +50,6 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				E76B675F2E42F1550037BEC8 /* Exceptions for "Hello-iOS" folder in "Hello-iOS" target */,
-				E9DAB2602E4373590084667D /* Exceptions for "Hello-iOS" folder in "Hello-iOSTests" target */,
 			);
 			path = "Hello-iOS";
 			sourceTree = "<group>";
