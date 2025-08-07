@@ -33,6 +33,7 @@ Temporary Items
 *.perspectivev3
 !default.perspectivev3
 *.hmap
+*.xcconfig
 
 # 사용자 설정 및 파생 데이터
 build/
