@@ -8,36 +8,43 @@ import SnapKit
 import Then
 
 final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
-  
-  // MARK: - UI 컴포넌트 정의
+  // 프로필 이미지 뷰
   private let profileImageView = UIImageView().then {
-    $0.backgroundColor = .systemGray5 // 임시
-    $0.layer.cornerRadius = 20
+    $0.backgroundColor = .systemGray5
+    $0.layer.cornerRadius = 24
     $0.clipsToBounds = true
+    $0.contentMode = .scaleAspectFill
     $0.image = .egg
   }
+  // 레벨 라벨
   private let levelLabel = UILabel().then {
-    $0.font = .boldSystemFont(ofSize: 18)
+    $0.font = .boldSystemFont(ofSize: 24)
     $0.textAlignment = .center
     $0.text = "Lv.1" // 임시
   }
+  // 경험치 바
   private let expBar = UIProgressView(progressViewStyle: .default).then {
     $0.progress = 0.3 // 임시
   }
+  // 경험치 라벨
   private let expLabel = UILabel().then {
-    $0.font = .systemFont(ofSize: 15)
+    $0.font = .systemFont(ofSize: 13)
     $0.textAlignment = .center
-    $0.text = "3 / 10" // 임시
+    $0.text = "(3 / 10)" // 임시
+    $0.textColor = .secondaryLabel
   }
+  // 출석 체크 라벨
   private let attendanceLabel = UILabel().then {
-    $0.font = .boldSystemFont(ofSize: 20)
+    $0.font = .boldSystemFont(ofSize: 24)
     $0.textAlignment = .center
     $0.text = "출석 체크"
   }
+  // 캘린더 영역
   private let calendarContainerView = UIView().then {
     $0.backgroundColor = .secondarySystemBackground
     $0.layer.cornerRadius = 16
   }
+  // 모의면접 기록 버튼
   private let recordButton = UIButton(configuration: .filled()).then {
     $0.configuration?.title = "모의 면접 기록"
     $0.configuration?.baseBackgroundColor = .main
@@ -50,9 +57,32 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
     }
   }
   
+  // 스크롤 뷰
   private let scrollView = UIScrollView()
   private let contentView = UIView()
-    
+  
+  // 스택뷰 관련
+  // 전체 스택뷰
+  private let infoStackView = UIStackView().then {
+    $0.axis = .horizontal
+    $0.spacing = 25
+    $0.alignment = .bottom
+  }
+  
+  // 프로필 우측 영역
+  private let infoRowStackView = UIStackView().then {
+    $0.axis = .vertical
+    $0.alignment = .center
+    $0.spacing = 8
+  }
+  
+  // 경험치 바 + 경험치 라벨
+  private let expBarExpLabelStack = UIStackView().then {
+    $0.axis = .vertical
+    $0.alignment = .fill
+    $0.spacing = 2
+  }
+  
   init(reactor: MyPageInfoReactor) {
     super.init(nibName: nil, bundle: nil)
     self.reactor = reactor
@@ -66,39 +96,51 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
   override func setupUI() {
     view.backgroundColor = .systemBackground
     
+    // 스크롤뷰 최우선 주입
     view.addSubview(scrollView)
     scrollView.snp.makeConstraints { $0.edges.equalToSuperview() }
-
+    
     scrollView.addSubview(contentView)
     contentView.snp.makeConstraints {
-        $0.edges.equalToSuperview()
-        $0.width.equalToSuperview()
+      $0.edges.equalToSuperview()
+      $0.width.equalToSuperview()
     }
     
-    [profileImageView, levelLabel, expBar, expLabel, attendanceLabel, calendarContainerView, recordButton].forEach {
-      contentView.addSubview($0)
-    }
+    // 스택뷰 주입
+    expBarExpLabelStack.addArrangedSubview(expBar)
+    expBarExpLabelStack.addArrangedSubview(expLabel)
     
+    infoStackView.addArrangedSubview(infoRowStackView)
+    
+    
+    // 컨텐츠 뷰에 주입
+    contentView.addSubview(profileImageView)
+    contentView.addSubview(levelLabel)
+    contentView.addSubview(expBarExpLabelStack)
+    contentView.addSubview(attendanceLabel)
+    contentView.addSubview(calendarContainerView)
+    contentView.addSubview(recordButton)
+    
+    // 오토레이아웃 영역
     profileImageView.snp.makeConstraints {
       $0.top.equalToSuperview().offset(32)
-      $0.centerX.equalToSuperview()
-      $0.width.height.equalTo(100)
+      $0.leading.equalToSuperview().inset(20)
+      $0.width.height.equalTo(128)
     }
     
-    levelLabel.snp.makeConstraints {
-      $0.top.equalTo(profileImageView.snp.bottom).offset(8)
-      $0.centerX.equalToSuperview()
+    levelLabel.snp.makeConstraints{
+      $0.centerY.equalTo(profileImageView)
+      $0.leading.equalTo(profileImageView.snp.trailing).offset(25)
+      $0.trailing.equalToSuperview().inset(20)
+    }
+    
+    expBarExpLabelStack.snp.makeConstraints{
+      $0.leading.trailing.equalTo(levelLabel)
+      $0.bottom.equalTo(profileImageView)
     }
     
     expBar.snp.makeConstraints {
-      $0.top.equalTo(levelLabel.snp.bottom).offset(12)
-      $0.leading.trailing.equalToSuperview().inset(32)
       $0.height.equalTo(10)
-    }
-    
-    expLabel.snp.makeConstraints {
-      $0.top.equalTo(expBar.snp.bottom).offset(4)
-      $0.centerX.equalToSuperview()
     }
     
     attendanceLabel.snp.makeConstraints{
