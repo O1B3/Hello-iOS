@@ -7,11 +7,23 @@
 
 import Testing
 @testable import Hello_iOS
+import Supabase
+import Foundation
+
 
 struct Hello_iOSTests {
 
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-    }
+  @Test func fetchLearningAllData() async throws {
+    let repo = LearningRepository()
+    let result = try await LearningService(learningRepository: repo).requestAllData()
 
+    print(result)
+  }
+
+  @Test func fetchLearningRecentlyData() async throws {
+    let repo = LearningRepository()
+    let result = try await LearningService(learningRepository: repo).requestRecentlyData()
+
+    print(result)
+  }
 }
