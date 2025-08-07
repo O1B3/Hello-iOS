@@ -4,9 +4,9 @@
 //
 //  Created by 이태윤 on 8/6/25.
 //
-
 import UIKit
 import ReactorKit
+import RxCocoa
 import Then
 import SnapKit
 
@@ -56,6 +56,34 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
     buttonStackView.snp.makeConstraints {
       $0.directionalEdges.equalTo(view.safeAreaLayoutGuide).inset(16)
     }
+  }
+
+  override func bind(reactor: InterviewReactor) {
+    myStudyInterviewButton.rx.tap
+      .map { InterviewReactor.Action.selectInterviewMode(.myStudy) }
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
+
+    reviewInterviewButton.rx.tap
+      .map { InterviewReactor.Action.selectInterviewMode(.review) }
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
+
+    reactor.state
+      .map { $0.selectedMode }
+      .distinctUntilChanged { $0 == $1 }
+      .compactMap { $0 }
+      .bind(with: self) { owner, mode in
+        let container = DIContainer.shared
+        // container.register(SelectionInterviewViewController(
+        //   mode: mode,
+        //   reactor: SelectionInterviewViewReactor())
+        // )
+        container.register(InterviewRoomViewController(reactor: InterviewRoomReactor()))
+        let interviewRoomVC: InterviewRoomViewController = container.resolve()
+        owner.navigationController?.pushViewController(interviewRoomVC, animated: true)
+      }
+      .disposed(by: disposeBag)
   }
 }
 
