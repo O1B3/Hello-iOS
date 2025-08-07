@@ -12,7 +12,7 @@ import SnapKit
 
 class InterviewViewController: BaseViewController<InterviewReactor> {
 
-  let buttonStackView = UIStackView().then {
+  private let buttonStackView = UIStackView().then {
     $0.axis = .vertical
     $0.spacing = 24
     $0.alignment = .fill
@@ -21,11 +21,11 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
     $0.layer.masksToBounds = false
   }
 
-  let myStudyInterviewButton = ShadowButton().then {
+  private let myStudyInterviewButton = ShadowButton().then {
     $0.setTitle("내 학습 기반 모의 면접", for: .normal)
   }
 
-  let reviewInterviewButton = ShadowButton().then {
+  private let reviewInterviewButton = ShadowButton().then {
     $0.setTitle("복습 모의 면접", for: .normal)
   }
 
