@@ -144,10 +144,16 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
 
   }
   override func bind(reactor: InterviewRoomReactor) {
-//    micButton.rx.tap
-//      .map { reactor.Action. }
-//      .bind(to: reactor.action)
-//      .disposed(by: disposeBag)
-  }
+    micButton.rx.tap
+      .map { InterviewRoomReactor.Action.toggleRecording}
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
+
+    reactor.state
+         .map { $0.recognizedText }
+         .distinctUntilChanged()
+         .bind(to: myAnswerTextView.rx.text)
+         .disposed(by: disposeBag)
+     }
 }
 
