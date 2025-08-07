@@ -42,14 +42,10 @@ InterviewRoomReactor.State
     switch action {
     case .toggleRecording:
       if currentState.isRecording {
-        return .concat([
-          .just(.setRecording(false))
-        ])
+        return .just(.setRecording(false))
       } else {
         requestPermissions()
-        return .concat([
-          .just(.setRecording(true))
-        ])
+        return .just(.setRecording(true))
       }
     case .recognizedTextChanged(let newText):
       return .just(.setRecognizedText(newText))
@@ -82,7 +78,7 @@ InterviewRoomReactor.State
       case .notDetermined:
         print("음성 인식 권한 미결정")
       @unknown default:
-        fatalError("알 수 없는 권한 상태")
+        print("알 수 없는 상태")
       }
     }
 
