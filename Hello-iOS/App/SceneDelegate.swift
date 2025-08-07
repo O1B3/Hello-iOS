@@ -55,7 +55,10 @@ extension SceneDelegate {
   func makeTabBarController() -> UITabBarController {
     let container = DIContainer.shared
     container.register(InterviewViewController(reactor: InterviewReactor()))
-    container.register(MyPageInfoViewController(reactor: MyPageInfoReactor()))
+    container
+      .register(
+        MyPageInfoViewController(reactor: MyPageInfoReactor(dataService: StubUserDataService()))
+      )
     
     let interviewVC: InterviewViewController = container.resolve()
     let myPageVC: MyPageInfoViewController = container.resolve()
