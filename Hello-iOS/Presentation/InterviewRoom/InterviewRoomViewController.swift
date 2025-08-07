@@ -13,7 +13,7 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    setUI()
+    setupUI()
     setConstraints()
     view.backgroundColor = .red
   }
@@ -28,7 +28,7 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
   }
 
   // UI 추가
-  private func setUI() {
+  override func setupUI() {
 
   }
 

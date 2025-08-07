@@ -14,7 +14,7 @@ class SelectionInterviewViewController: BaseViewController<SelectionInterviewRea
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    setUI()
+    setupUI()
     setConstraints()
     view.backgroundColor = .blue
   }
@@ -29,7 +29,7 @@ class SelectionInterviewViewController: BaseViewController<SelectionInterviewRea
   }
 
   // UI 추가
-  private func setUI() {
+  override func setupUI() {
 
   }
 

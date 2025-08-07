@@ -14,7 +14,7 @@ class ResultInterviewViewController: BaseViewController<ResultInterviewReactor> 
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    setUI()
+    setupUI()
     setConstraints()
     view.backgroundColor = .black
   }
@@ -29,7 +29,7 @@ class ResultInterviewViewController: BaseViewController<ResultInterviewReactor> 
   }
 
   // UI 추가
-  private func setUI() {
+  override func setupUI() {
 
   }
 
