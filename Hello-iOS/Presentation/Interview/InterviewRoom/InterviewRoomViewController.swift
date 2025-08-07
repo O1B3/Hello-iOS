@@ -150,10 +150,97 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
       .disposed(by: disposeBag)
 
     reactor.state
-         .map { $0.recognizedText }
-         .distinctUntilChanged()
-         .bind(to: myAnswerTextView.rx.text)
-         .disposed(by: disposeBag)
-     }
+      .map { $0.recognizedText }
+      .distinctUntilChanged()
+      .bind(to: myAnswerTextView.rx.text)
+      .disposed(by: disposeBag)
+
+    //녹음 상태가 바뀌면 start/stop 동작
+    reactor.state
+      .map { $0.isRecording }
+      .distinctUntilChanged()
+      .subscribe(onNext: { [weak self] isRecording in
+        if isRecording {
+          self?.startRecording()
+        } else {
+          self?.stopRecording()
+        }
+      })
+      .disposed(by: disposeBag)
+  }
+
+  private func startRecording() {
+    SFSpeechRecognizer.requestAuthorization { authStatus in
+      guard authStatus == .authorized else {
+        print("음성 인식 권한 거부됨")
+        return
+      }
+
+      DispatchQueue.main.async {
+        if self.audioEngine.isRunning {
+          self.audioEngine.stop()
+          self.recognitionRequest?.endAudio()
+          return
+        }
+
+        // 이전 작업 취소
+        self.recognitionTask?.cancel()
+        self.recognitionTask = nil
+
+        // 오디오 세션 설정
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+          try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
+          try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+        } catch {
+          print("오디오 세션 설정 실패: \(error.localizedDescription)")
+          return
+        }
+
+        self.recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
+        guard let recognitionRequest = self.recognitionRequest else { return }
+
+        let inputNode = self.audioEngine.inputNode
+        recognitionRequest.shouldReportPartialResults = true
+
+        self.recognitionTask = self.speechRecognizer?.recognitionTask(with: recognitionRequest) { result, error in
+          if let result = result {
+            let bestString = result.bestTranscription.formattedString
+            self.reactor?.action.onNext(.recognizedTextChanged(bestString))
+          }
+
+          if error != nil || (result?.isFinal ?? false) {
+            self.audioEngine.stop()
+            inputNode.removeTap(onBus: 0)
+            self.recognitionRequest = nil
+            self.recognitionTask = nil
+          }
+        }
+
+        // 오디오 입력 설정
+        let recordingFormat = inputNode.outputFormat(forBus: 0)
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, when in
+          self.recognitionRequest?.append(buffer)
+        }
+
+        self.audioEngine.prepare()
+        do {
+          try self.audioEngine.start()
+        } catch {
+          print("오디오 엔진 시작 실패: \(error.localizedDescription)")
+        }
+      }
+    }
+  }
+
+  // 음성인식 중지
+  private func stopRecording() {
+    audioEngine.stop()
+    recognitionRequest?.endAudio()
+    recognitionRequest = nil
+    recognitionTask = nil
+
+    audioEngine.inputNode.removeTap(onBus: 0)
+  }
 }
 

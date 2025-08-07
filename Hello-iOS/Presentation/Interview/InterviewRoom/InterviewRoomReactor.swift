@@ -16,6 +16,7 @@ InterviewRoomReactor.State
   // 사용자 액션 정의 (사용자의 의도)
   enum Action {
     case toggleRecording
+    case recognizedTextChanged(String)
   }
 
   // 상태변경 이벤트 정의 (상태를 어떻게 바꿀 것인가)
@@ -42,16 +43,16 @@ InterviewRoomReactor.State
     case .toggleRecording:
       if currentState.isRecording {
         return .concat([
-          .just(.setRecording(false)),
-          .just(.setRecognizedText("녹음 끝!")),
+          .just(.setRecording(false))
         ])
       } else {
         requestPermissions()
         return .concat([
-          .just(.setRecording(true)),
-          .just(.setRecognizedText("녹음 시작!")),
+          .just(.setRecording(true))
         ])
       }
+    case .recognizedTextChanged(let newText):
+      return .just(.setRecognizedText(newText))
     }
   }
 
