@@ -13,7 +13,7 @@ MyPageInfoReactor.State
 > {
   // 사용자 액션 정의 (사용자의 의도)
   enum Action {
-    case reloadUserStatus
+    case reloadUserStatus // 유저 정보 리로드
   }
   
   // 상태변경 이벤트 정의 (상태를 어떻게 바꿀 것인가)
@@ -28,10 +28,10 @@ MyPageInfoReactor.State
   
   // View의 상태 정의 (현재 View의 상태값)
   struct State {
-    var profileImageName: String
-    var levelText: String
-    var expProgress: Float
-    var expLabel: String
+    var profileImageName: String  // 프로필 이미지 네임
+    var levelText: String         // 레벨 텍스트
+    var expProgress: Float        // 프로그레스 바 진행정도
+    var expLabel: String          // 경험치 라벨
   }
   
   let userDataService: FetchUserDataServiceProtocol

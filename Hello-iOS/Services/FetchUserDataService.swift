@@ -2,13 +2,14 @@
 import Foundation
 import RealmSwift
 
+// 유저 데이터 획득 프로토콜
 protocol FetchUserDataServiceProtocol {
   func fetchUserExp() -> UserExperience
   func fetchAttendance() -> [Attendance]
 }
 
+// 실제 Realm에서 데이터 가져오는 코드
 struct FetchUserDataService: FetchUserDataServiceProtocol {
-  // 실제 사용하는 코드
   let realm = try! Realm()
   
   func fetchUserExp() -> UserExperience {
@@ -21,11 +22,10 @@ struct FetchUserDataService: FetchUserDataServiceProtocol {
     let attendanceResults = realm.objects(RealmAttendance.self)
     return attendanceResults.map { $0.toDomain() }
   }
-
 }
 
+// Mock Data Testing Code
 struct StubUserDataService: FetchUserDataServiceProtocol {
-  //테스팅 코드
   func fetchUserExp() -> UserExperience {
     return UserExperience(exp: 11)
   }

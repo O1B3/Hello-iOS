@@ -169,7 +169,6 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
       .disposed(by: disposeBag)
     
     // State -> UI 바인딩
-    
     reactor.state
       .map(\.profileImageName)
       .distinctUntilChanged()
@@ -177,7 +176,6 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
         self?.profileImageView.image = UIImage(named: assetName)
       }
       .disposed(by: disposeBag)
-    
     
     reactor.state.map(\.levelText)
       .distinctUntilChanged()
