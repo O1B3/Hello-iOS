@@ -30,7 +30,7 @@ InterviewReactor.State
 
   // View의 상태 정의 (현재 View의 상태값)
   struct State {
-    var selectedMode: InterviewMode?
+    @Pulse var selectedMode: InterviewMode?
   }
 
   // 생성자에서 초기 상태 설정

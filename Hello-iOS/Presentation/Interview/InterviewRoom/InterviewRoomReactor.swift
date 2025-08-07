@@ -6,6 +6,7 @@
 //
 import ReactorKit
 import RxSwift
+import Speech
 
 final class InterviewRoomReactor: BaseReactor<
 InterviewRoomReactor.Action,
@@ -45,6 +46,7 @@ InterviewRoomReactor.State
           .just(.setRecognizedText("녹음 끝!")),
         ])
       } else {
+        requestPermissions()
         return .concat([
           .just(.setRecording(true)),
           .just(.setRecognizedText("녹음 시작!")),
@@ -64,6 +66,28 @@ InterviewRoomReactor.State
       newState.recognizedText = recognizedText
     }
     return newState
+  }
+
+  // 마이크 권한 요청
+  private func requestPermissions() {
+    SFSpeechRecognizer.requestAuthorization { authStatus in
+      switch authStatus {
+      case .authorized:
+        print("음성 인식 권한 허용됨")
+      case .denied:
+        print("음성 인식 권한 거부됨")
+      case .restricted:
+        print("음성 인식이 이 디바이스에서 제한됨")
+      case .notDetermined:
+        print("음성 인식 권한 미결정")
+      @unknown default:
+        fatalError("알 수 없는 권한 상태")
+      }
+    }
+
+    AVAudioSession.sharedInstance().requestRecordPermission { granted in
+      print("마이크 권한: \(granted)")
+    }
   }
 }
 

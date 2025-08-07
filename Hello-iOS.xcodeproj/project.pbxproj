@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E7738CFE2E44B85A00984D8F /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = E7E0608B2E42E6D90088BB28 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E7E060782E42E43C0088BB28 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = E7E060772E42E43C0088BB28 /* RxCocoa */; };
 		E7E0607A2E42E43C0088BB28 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = E7E060792E42E43C0088BB28 /* RxRelay */; };
 		E7E0607D2E42E44E0088BB28 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = E7E0607C2E42E44E0088BB28 /* Then */; };
@@ -29,6 +30,20 @@
 			remoteInfo = "Hello-iOS";
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E7738CFF2E44B85A00984D8F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				E7738CFE2E44B85A00984D8F /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		E7E060422E42E3C90088BB28 /* Hello-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Hello-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -118,6 +133,7 @@
 				E7E0603E2E42E3C90088BB28 /* Sources */,
 				E7E0603F2E42E3C90088BB28 /* Frameworks */,
 				E7E060402E42E3C90088BB28 /* Resources */,
+				E7738CFF2E44B85A00984D8F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

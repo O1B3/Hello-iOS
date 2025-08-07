@@ -69,10 +69,7 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
 
-    reactor.state
-      .map { $0.selectedMode }
-      .distinctUntilChanged { $0 == $1 }
-      .compactMap { $0 }
+    reactor.pulse(\.$selectedMode)
       .bind(with: self) { owner, mode in
         let container = DIContainer.shared
         // container.register(SelectionInterviewViewController(
