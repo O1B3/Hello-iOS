@@ -54,9 +54,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 extension SceneDelegate {
   func makeTabBarController() -> UITabBarController {
     let container = DIContainer.shared
-    container.register(ViewController(reactor: ViewReactor()))
+    container.register(InterviewViewController(reactor: InterviewReactor()))
 
-    let interviewVC: ViewController = container.resolve()
+    let interviewVC: InterviewViewController = container.resolve()
     let myPageVC = UIViewController()
     let wordBookVC = UIViewController()
     let tabBarController = UITabBarController()
