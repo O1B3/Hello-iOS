@@ -31,7 +31,7 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    setUI()
+    setupUI()
     setConstraints()
   }
 
@@ -45,7 +45,7 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
   }
 
   // UI 추가
-  private func setUI() {
+  override func setupUI() {
     view.addSubview(buttonStackView)
     buttonStackView.addArrangedSubview(myStudyInterviewButton)
     buttonStackView.addArrangedSubview(reviewInterviewButton)
