@@ -13,7 +13,9 @@ InterviewRoomReactor.Mutation,
 InterviewRoomReactor.State
 > {
   // 사용자 액션 정의 (사용자의 의도)
-  enum Action {}
+  enum Action {
+    case tapMic
+  }
 
   // 상태변경 이벤트 정의 (상태를 어떻게 바꿀 것인가)
   enum Mutation {}

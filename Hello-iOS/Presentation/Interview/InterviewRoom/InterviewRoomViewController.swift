@@ -14,6 +14,19 @@ import AVFoundation
 
 class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
 
+  // 음성 인식 언어
+  private let speechRecognizer = SFSpeechRecognizer(locale: Locale.init(identifier: "ko-KR"))
+
+  // 음성인식 요청
+  private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+
+  // 음성인식 요청결과
+  private var recognitionTask: SFSpeechRecognitionTask?
+
+  // 순수 소리만 인식하는 오디오 엔진
+  private let audioEngine = AVAudioEngine()
+
+
   private let questionStackView = UIStackView().then {
     $0.axis = .horizontal
     $0.spacing = 10
@@ -43,9 +56,8 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
     $0.clipsToBounds = true
   }
 
-  private let myAnswerLabel = UILabel().then {
+  private let myAnswerTextView = UITextView().then {
     $0.textColor = .label
-    $0.numberOfLines = 0
     $0.backgroundColor = .clear
     $0.font = .systemFont(ofSize: 23, weight: .medium)
     $0.text = "Array에 대해서 설명해주세요 Array에 대해서 설명해주세요 Array에 대해서 설명해주세요 Array에 대해서 설명해주세요."
@@ -63,10 +75,9 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
     $0.tintColor = .main
   }
 
-  private let microphoneImageView = UIImageView().then {
+  private let micButton = UIButton(type: .system).then {
     let config = UIImage.SymbolConfiguration(pointSize: 40, weight: .medium)
-    $0.image = UIImage(systemName: "mic", withConfiguration: config)
-    $0.contentMode = .scaleAspectFit
+    $0.setImage(UIImage(systemName: "chevron.left", withConfiguration: config), for: .normal)
     $0.tintColor = .main
   }
 
@@ -93,11 +104,11 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
 
   // UI 추가
   override func setupUI() {
-    [questionStackView, interviewerImageView, myAnswerLabel, micStackView].forEach { view.addSubview($0) }
+    [questionStackView, interviewerImageView, myAnswerTextView, micStackView].forEach { view.addSubview($0) }
     questionStackView.addArrangedSubview(verticalBar)
     questionStackView.addArrangedSubview(questionLable)
     micStackView.addArrangedSubview(leftButton)
-    micStackView.addArrangedSubview(microphoneImageView )
+    micStackView.addArrangedSubview(micButton )
     micStackView.addArrangedSubview(rightButton)
 
 
@@ -120,17 +131,23 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
       $0.height.width.equalTo(100)
     }
 
-    myAnswerLabel.snp.makeConstraints {
+    myAnswerTextView.snp.makeConstraints {
       $0.top.equalTo(interviewerImageView.snp.bottom).offset(12)
       $0.leading.trailing.equalToSuperview().inset(16)
     }
 
     micStackView.snp.makeConstraints {
-      $0.top.equalTo(myAnswerLabel.snp.bottom).offset(12)
+      $0.top.equalTo(myAnswerTextView.snp.bottom).offset(12)
       $0.leading.trailing.equalToSuperview().inset(16)
       $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(12)
     }
 
+  }
+  override func bind(reactor: InterviewRoomReactor) {
+    micButton.rx.tap
+      .map { reactor.Action. }
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
   }
 }
 
