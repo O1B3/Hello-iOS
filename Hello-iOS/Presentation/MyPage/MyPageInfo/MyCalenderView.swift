@@ -4,7 +4,7 @@ import FSCalendar
 import Then
 
 class MyCalenderView: UIView, FSCalendarDataSource, FSCalendarDelegate, FSCalendarDelegateAppearance {
-    
+  
   private let calendarView = FSCalendar().then {
     // 보편 설정
     $0.locale = Locale(identifier: "ko_KR")
@@ -13,7 +13,7 @@ class MyCalenderView: UIView, FSCalendarDataSource, FSCalendarDelegate, FSCalend
     // 헤더/요일 높이 적당히
     $0.headerHeight = 44
     $0.weekdayHeight = 22
-    // 간단한 스타일
+    // 스타일 설정
     $0.appearance.headerDateFormat = "YYYY년 M월"
     $0.appearance.headerTitleAlignment = .center
     $0.appearance.headerTitleFont = .boldSystemFont(ofSize: 16)
@@ -27,26 +27,30 @@ class MyCalenderView: UIView, FSCalendarDataSource, FSCalendarDelegate, FSCalend
   
   override init(frame: CGRect) {
     super.init(frame: frame)
+    // 캘린더 뷰 관련 요소 주입
     addSubview(calendarView)
     calendarView.dataSource = self
     calendarView.delegate = self
   }
-
+  
+  @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
   
   override func layoutSubviews() {
     super.layoutSubviews()
-    calendarView.frame = bounds
-    tintWeekdayHeader(of: calendarView)
+    calendarView.frame = bounds           // 내부 크기 지정
+    tintWeekdayHeader(of: calendarView)   // 안정성을 위해 레이아웃 잡은 후에 색변경 한번 실행
   }
   
-  var attendedDayKeys: Set<String> = [] {
+  // 리액터에서 바인딩 되는 값 (출석요일 정보)
+  var attendedDayKeys: Set<Date> = [] {
     didSet{
       calendarView.reloadData()
     }
   }
+  
   // 요일 색
   func calendar(_ calendar: FSCalendar,
                 appearance: FSCalendarAppearance,
@@ -68,7 +72,7 @@ class MyCalenderView: UIView, FSCalendarDataSource, FSCalendarDelegate, FSCalend
     }
   }
   
-  // 요일 헤더 색
+  // 요일 헤더 색상 변경
   func tintWeekdayHeader(of calendar: FSCalendar) {
     let weekdayView = calendar.calendarWeekdayView
     let labels = weekdayView.weekdayLabels
@@ -92,14 +96,14 @@ class MyCalenderView: UIView, FSCalendarDataSource, FSCalendarDelegate, FSCalend
   
   // 마킹 정보 아래 점을 찍어주는 코드
   func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
-    return attendedDayKeys.contains(DateKeyService.makeKey(from: date)) ? 1 : 0
+    return attendedDayKeys.contains(Calendar.current.startOfDay(for: date)) ? 1 : 0
   }
   
   // 점 색상 커스텀
   func calendar(_ calendar: FSCalendar,
                 appearance: FSCalendarAppearance,
                 eventDefaultColorsFor date: Date) -> [UIColor]? {
-    return attendedDayKeys.contains(DateKeyService.makeKey(from: date)) ? [.main] : nil
+    return attendedDayKeys.contains(Calendar.current.startOfDay(for: date)) ? [.main] : nil
   }
   
   
@@ -113,12 +117,10 @@ class MyCalenderView: UIView, FSCalendarDataSource, FSCalendarDelegate, FSCalend
       return .main
     }
     // 출석한 날은 sub색 마킹
-    if attendedDayKeys.contains(DateKeyService.makeKey(from: date)) {
+    if attendedDayKeys.contains(Calendar.current.startOfDay(for: date)) {
       return .sub
     }
     // 없으면 마킹 X
     return nil
   }
-  
-  
 }
