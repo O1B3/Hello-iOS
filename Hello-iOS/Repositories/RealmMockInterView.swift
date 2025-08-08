@@ -3,6 +3,31 @@ import Foundation
 
 import RealmSwift
 
+// 모의면접 그룹 렐름DB
+class RealmMockInterviewGroup: Object {
+  @Persisted(primaryKey: true) var id: String             // 그룹 식별자
+  @Persisted var date: Date                               // 날짜
+  @Persisted var records: List<RealmMockInterviewRecord>  // 일대다 연결
+  
+  // 도메인 모델 → Realm 모델
+  convenience init(from domain: MockInterviewGroup) {
+    self.init()
+    self.id = domain.id
+    self.date = domain.date
+    self.records.append(objectsIn: domain.records.map { RealmMockInterviewRecord(from: $0) })
+  }
+  
+  // Realm 모델 → 도메인 모델
+  func toDomain() -> MockInterviewGroup {
+    MockInterviewGroup(
+      id: id,
+      date: date,
+      records: records.map { $0.toDomain() }
+    )
+  }
+}
+
+// 각 개별 모의면접 답변기록 렐름DB
 class RealmMockInterviewRecord: Object {
   @Persisted var id: Int              // 답변 인덱스
   @Persisted var groupId: String      // 그룹 UUID 문자열
@@ -34,4 +59,3 @@ class RealmMockInterviewRecord: Object {
     )
   }
 }
-
