@@ -7,7 +7,15 @@
 
 import Foundation
 
-class LearningService {
+protocol LearningServiceProtocol {
+  func requestAllData() async throws -> [Categories]
+
+  func requestRecentlyData() async throws -> [Concept]
+
+  func setLatestUpdateTimeNow()
+}
+
+class LearningService: LearningServiceProtocol {
   private let learningRepository: LearningRepository
 
   init(learningRepository: LearningRepository) {

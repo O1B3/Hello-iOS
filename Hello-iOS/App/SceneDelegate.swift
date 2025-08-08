@@ -55,6 +55,8 @@ extension SceneDelegate {
   func makeTabBarController() -> UITabBarController {
     let container = DIContainer.shared
     container.register(InterviewViewController(reactor: InterviewReactor()))
+    container.register(WordBookViewController())
+
     container
       .register(
         MyPageInfoViewController(reactor: MyPageInfoReactor(dataService: StubUserDataService()))
@@ -62,8 +64,7 @@ extension SceneDelegate {
     
     let interviewVC: InterviewViewController = container.resolve()
     let myPageVC: MyPageInfoViewController = container.resolve()
-    
-    let wordBookVC = UIViewController()
+    let wordBookVC: WordBookViewController = container.resolve()
     let tabBarController = UITabBarController()
 
     wordBookVC.tabBarItem = UITabBarItem(
@@ -96,6 +97,17 @@ extension SceneDelegate {
     appearance.shadowColor = .lightGray
     tabBarController.tabBar.standardAppearance = appearance
     tabBarController.tabBar.scrollEdgeAppearance = tabBarController.tabBar.standardAppearance
+
+    /// 상단 네비게이션의 경계션 표현
+    let topAppearance = UINavigationBarAppearance()
+
+    topAppearance.configureWithOpaqueBackground()
+    topAppearance.backgroundColor = .background
+    topAppearance.titleTextAttributes = [.foregroundColor: UIColor.label]
+    topAppearance.shadowColor = UIColor.lightGray
+
+    UINavigationBar.appearance().standardAppearance = topAppearance
+    UINavigationBar.appearance().scrollEdgeAppearance = topAppearance
 
     return tabBarController
   }
