@@ -3,7 +3,7 @@ import Foundation
 
 import RealmSwift
 
-// 모의면접 그룹 렐름DB
+// MARK: 모의면접 세션 기록 (여러 질문 묶음) Realm DB
 class RealmMockInterviewGroup: Object {
   @Persisted(primaryKey: true) var id: String             // 그룹 식별자
   @Persisted var date: Date                               // 날짜
@@ -27,7 +27,7 @@ class RealmMockInterviewGroup: Object {
   }
 }
 
-// 각 개별 모의면접 답변기록 렐름DB
+// MARK: 모의면접 질문에 대한 개별 답변 Realm DB
 class RealmMockInterviewRecord: Object {
   @Persisted var id: Int              // 답변 인덱스
   @Persisted var groupId: String      // 그룹 UUID 문자열
