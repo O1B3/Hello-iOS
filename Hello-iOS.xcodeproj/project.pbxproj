@@ -20,6 +20,7 @@
 		E7E0608F2E42E7240088BB28 /* ReactorKit in Frameworks */ = {isa = PBXBuildFile; productRef = E7E0608E2E42E7240088BB28 /* ReactorKit */; };
 		E7E060922E42E74C0088BB28 /* LookinServer in Frameworks */ = {isa = PBXBuildFile; productRef = E7E060912E42E74C0088BB28 /* LookinServer */; };
 		E9145A892E45F863007C2167 /* Shuffle in Frameworks */ = {isa = PBXBuildFile; productRef = E9145A882E45F863007C2167 /* Shuffle */; };
+		FEAC15FA2E45EDFB00209390 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = FEAC15F92E45EDFB00209390 /* RealmSwift */; };
 		FEDC26182E459C0200422130 /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = FEDC26172E459C0200422130 /* FSCalendar */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +42,16 @@
 			dstSubfolderSpec = 10;
 			files = (
 				E7738CFE2E44B85A00984D8F /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FEAC15F72E45EDBA00209390 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -103,6 +114,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FEAC15FA2E45EDFB00209390 /* RealmSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +126,7 @@
 			children = (
 				E7E060442E42E3C90088BB28 /* Hello-iOS */,
 				E7E0605B2E42E3CB0088BB28 /* Hello-iOSTests */,
+				FEAC15F42E45EDBA00209390 /* Frameworks */,
 				E7E060432E42E3C90088BB28 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -125,6 +138,13 @@
 				E7E060582E42E3CB0088BB28 /* Hello-iOSTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		FEAC15F42E45EDBA00209390 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -173,6 +193,7 @@
 				E7E060542E42E3CB0088BB28 /* Sources */,
 				E7E060552E42E3CB0088BB28 /* Frameworks */,
 				E7E060562E42E3CB0088BB28 /* Resources */,
+				FEAC15F72E45EDBA00209390 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -184,6 +205,7 @@
 			);
 			name = "Hello-iOSTests";
 			packageProductDependencies = (
+				FEAC15F92E45EDFB00209390 /* RealmSwift */,
 			);
 			productName = "Hello-iOSTests";
 			productReference = E7E060582E42E3CB0088BB28 /* Hello-iOSTests.xctest */;
@@ -679,6 +701,11 @@
 			package = E9145A872E45F863007C2167 /* XCRemoteSwiftPackageReference "Shuffle" */;
 			productName = Shuffle;
 		};
+        FEAC15F92E45EDFB00209390 /* RealmSwift */ = {
+            isa = XCSwiftPackageProductDependency;
+            package = E7E0608A2E42E6D90088BB28 /* XCRemoteSwiftPackageReference "realm-swift" */;
+            productName = RealmSwift;
+        };
 		FEDC26172E459C0200422130 /* FSCalendar */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FEDC26162E459C0200422130 /* XCRemoteSwiftPackageReference "FSCalendar" */;

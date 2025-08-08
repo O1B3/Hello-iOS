@@ -26,13 +26,22 @@ struct FetchUserDataService: FetchUserDataServiceProtocol {
 
 // Mock Data Testing Code
 struct StubUserDataService: FetchUserDataServiceProtocol {
-  func fetchUserExp() -> UserExperience {
-    return UserExperience(exp: 36)
-  }
+  func fetchUserExp() -> UserExperience { UserExperience(exp: 11) }
   
   func fetchAttendance() -> [Attendance] {
+    let cal = Calendar(identifier: .gregorian)
+    let today = Date()
+    let d = { (offset: Int, on: Bool) -> Attendance in
+      Attendance(id: UUID().uuidString,
+                 date: cal.date(byAdding: .day, value: offset, to: today)!,
+                 isAttendance: on)
+    }
     return [
-      Attendance(id: UUID().uuidString, date: Date(), isAttendance: true)
+      d(0,  true),  // 오늘 출석
+      d(-1, true),  // 어제 출석
+      d(-2, false), // 그제 결석
+      d(-3, true),  // 3일전 출석
+      d(-4, true),  // 3일전 출석
     ]
   }
 }
