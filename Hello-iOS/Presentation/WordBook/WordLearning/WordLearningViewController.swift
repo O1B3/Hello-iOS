@@ -21,6 +21,13 @@ class WordLearningViewController: BaseViewController<WordLearningReactor> {
   override func viewDidLoad() {
     wordLearningView.cardStack.dataSource = self
     wordLearningView.cardStack.delegate = self
+    self.title = "개념 공부"
+    setupNavigationBar()
+  }
+
+  private func setupNavigationBar() {
+    let plusButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: nil)
+    self.navigationItem.rightBarButtonItem = plusButton
   }
 }
 
