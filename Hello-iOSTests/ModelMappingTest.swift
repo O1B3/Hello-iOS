@@ -26,7 +26,7 @@ import Testing
 // MockInterviewRecord 모델 테스트
 @Test func testMockInterviewRecord() {
   let domain = MockInterviewRecord(id: 0, groupId: "g123", question: "Q?", modelAnswer: "A", myAnswer: "MyA", isSatisfied: true)
-  let realmObj = RealmMockInterviewRecord(from: domain, groupId: "g123")
+  let realmObj = RealmMockInterviewRecord(from: domain)
   let mappedBack = realmObj.toDomain()
   #expect(mappedBack == domain)
 }
@@ -131,16 +131,14 @@ func testRealmLearningData_MappingAndFilter_NoRealm() throws {
 
   // - cat1의 concepts에 "categoryId = 2"인 이질 데이터 추가
   let foreignConceptForCat1 = RealmConcept(
-    from: DomainConcept(id: 999, categoryId: 2, concept: "FOREIGN", explain: "FOREIGN", latestUpdate: Date(), isMemory: false, qnas: []),
-    categoryId: 2
+    from: DomainConcept(id: 999, categoryId: 2, concept: "FOREIGN", explain: "FOREIGN", latestUpdate: Date(), isMemory: false, qnas: [])
   )
   rCat1.concepts.append(foreignConceptForCat1)
 
   // - cat1의 concept(101) qnas에 "conceptId = 999"인 이질 QnA 추가
   if let rC101 = rCat1.concepts.first(where: { $0.id == 101 }) {
     let foreignQnaForC101 = RealmQnA(
-      from: DomainQnA(id: 5555, conceptId: 999, question: "FOREIGN-Q", answer: "FOREIGN-A", latestUpdate: Date()),
-      conceptId: 999
+      from: DomainQnA(id: 5555, conceptId: 999, question: "FOREIGN-Q", answer: "FOREIGN-A", latestUpdate: Date())
     )
     rC101.qnas.append(foreignQnaForC101)
   }

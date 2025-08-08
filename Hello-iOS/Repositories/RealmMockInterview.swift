@@ -15,7 +15,7 @@ class RealmMockInterviewGroup: Object {
     self.id = domain.id
     self.date = domain.date
     // 생성 시에 groupId 주입
-    let linkedRecords = domain.records.map { RealmMockInterviewRecord(from: $0, groupId: domain.id) }
+    let linkedRecords = domain.records.map { RealmMockInterviewRecord(from: $0) }
     self.records.append(objectsIn: linkedRecords)
   }
   
@@ -40,10 +40,10 @@ class RealmMockInterviewRecord: Object {
   @Persisted var isSatisfied: Bool    // 만족 여부
   
   // 도메인 모델 → Realm 모델
-  convenience init(from domain: MockInterviewRecord, groupId: String) {
+  convenience init(from domain: MockInterviewRecord) {
     self.init()
     self.id = domain.id
-    self.groupId = groupId
+    self.groupId = domain.groupId
     self.question = domain.question
     self.modelAnswer = domain.modelAnswer
     self.myAnswer = domain.myAnswer

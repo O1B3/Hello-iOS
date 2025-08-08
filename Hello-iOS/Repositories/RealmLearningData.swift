@@ -12,7 +12,7 @@ final class RealmCategory: Object {
     self.init()
     id = domain.id
     category = domain.category
-    let linked = domain.concepts.map { RealmConcept(from: $0, categoryId: domain.id) }
+    let linked = domain.concepts.map { RealmConcept(from: $0) }
     concepts.append(objectsIn: linked)
   }
 
@@ -39,17 +39,17 @@ final class RealmConcept: Object {
   @Persisted var qnas = List<RealmQnA>()
 
   // 도메인 -> Realm (부모의 categoryId를 FK로 강제 주입)
-  convenience init(from domain: DomainConcept, categoryId: Int) {
+  convenience init(from domain: DomainConcept) {
     self.init()
     id = domain.id
-    self.categoryId = categoryId   // <- 도메인값 대신 부모에서 온 값으로 고정
+    self.categoryId = domain.categoryId
     concept = domain.concept
     explain = domain.explain
     latestUpdate = domain.latestUpdate
     isMemory = domain.isMemory
 
     // QnA에도 FK 주입 (conceptId = 이 Concept의 id)
-    let linkedQnas = domain.qnas.map { RealmQnA(from: $0, conceptId: domain.id) }
+    let linkedQnas = domain.qnas.map { RealmQnA(from: $0) }
     qnas.append(objectsIn: linkedQnas)
   }
 
@@ -78,10 +78,10 @@ final class RealmQnA: Object {
   @Persisted var latestUpdate: Date
 
   // 도메인 -> Realm (FK 주입)
-  convenience init(from domain: DomainQnA, conceptId: Int) {
+  convenience init(from domain: DomainQnA) {
     self.init()
     id = domain.id
-    self.conceptId = conceptId     // <- 도메인의 conceptId 대신 부모에서 전달한 값으로 고정
+    self.conceptId = domain.conceptId
     question = domain.question
     answer = domain.answer
     latestUpdate = domain.latestUpdate
