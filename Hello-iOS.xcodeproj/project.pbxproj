@@ -19,6 +19,7 @@
 		E7E0608C2E42E6D90088BB28 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E7E0608B2E42E6D90088BB28 /* RealmSwift */; };
 		E7E0608F2E42E7240088BB28 /* ReactorKit in Frameworks */ = {isa = PBXBuildFile; productRef = E7E0608E2E42E7240088BB28 /* ReactorKit */; };
 		E7E060922E42E74C0088BB28 /* LookinServer in Frameworks */ = {isa = PBXBuildFile; productRef = E7E060912E42E74C0088BB28 /* LookinServer */; };
+		FEDC26182E459C0200422130 /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = FEDC26172E459C0200422130 /* FSCalendar */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7E0607A2E42E43C0088BB28 /* RxRelay in Frameworks */,
+				FEDC26182E459C0200422130 /* FSCalendar in Frameworks */,
 				E7E060802E42E45D0088BB28 /* SnapKit in Frameworks */,
 				E7E060872E42E5A70088BB28 /* Storage in Frameworks */,
 				E7E0608C2E42E6D90088BB28 /* RealmSwift in Frameworks */,
@@ -155,6 +157,7 @@
 				E7E0608B2E42E6D90088BB28 /* RealmSwift */,
 				E7E0608E2E42E7240088BB28 /* ReactorKit */,
 				E7E060912E42E74C0088BB28 /* LookinServer */,
+				FEDC26172E459C0200422130 /* FSCalendar */,
 			);
 			productName = "Hello-iOS";
 			productReference = E7E060422E42E3C90088BB28 /* Hello-iOS.app */;
@@ -219,6 +222,7 @@
 				E7E0608A2E42E6D90088BB28 /* XCRemoteSwiftPackageReference "realm-swift" */,
 				E7E0608D2E42E7240088BB28 /* XCRemoteSwiftPackageReference "ReactorKit" */,
 				E7E060902E42E74C0088BB28 /* XCRemoteSwiftPackageReference "LookinServer" */,
+				FEDC26162E459C0200422130 /* XCRemoteSwiftPackageReference "FSCalendar" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E7E060432E42E3C90088BB28 /* Products */;
@@ -592,6 +596,14 @@
 				minimumVersion = 1.2.8;
 			};
 		};
+		FEDC26162E459C0200422130 /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/WenchaoD/FSCalendar.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.4;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -649,6 +661,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E7E060902E42E74C0088BB28 /* XCRemoteSwiftPackageReference "LookinServer" */;
 			productName = LookinServer;
+		};
+		FEDC26172E459C0200422130 /* FSCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FEDC26162E459C0200422130 /* XCRemoteSwiftPackageReference "FSCalendar" */;
+			productName = FSCalendar;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

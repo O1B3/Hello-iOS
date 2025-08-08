@@ -1,6 +1,7 @@
 
 import UIKit
 
+import FSCalendar
 import ReactorKit
 import RxCocoa
 import RxSwift
@@ -16,13 +17,11 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
     $0.layer.cornerRadius = 24
     $0.clipsToBounds = true
     $0.contentMode = .scaleAspectFill
-    //    $0.image = .egg
   }
   // 레벨 라벨
   private let levelLabel = UILabel().then {
     $0.font = .boldSystemFont(ofSize: 24)
     $0.textAlignment = .center
-    //    $0.text = "Lv.1" // 임시
   }
   // 경험치 바
   private let expBar = UIProgressView(progressViewStyle: .default)
@@ -30,7 +29,6 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
   private let expLabel = UILabel().then {
     $0.font = .systemFont(ofSize: 13)
     $0.textAlignment = .center
-    //    $0.text = "(3 / 10)" // 임시
     $0.textColor = .secondaryLabel
   }
   // 출석 체크 라벨
@@ -40,6 +38,8 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
     $0.text = "출석 체크"
   }
   // 캘린더 영역
+  private let calendarView = MyCalenderView()
+  
   private let calendarContainerView = UIView().then {
     $0.backgroundColor = .secondarySystemBackground
     $0.layer.cornerRadius = 16
@@ -120,6 +120,9 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
     contentView.addSubview(calendarContainerView)
     contentView.addSubview(recordButton)
     
+    // 캘린더 뷰 관련 주입요소
+    calendarContainerView.addSubview(calendarView)
+    
     // 오토레이아웃 영역
     profileImageView.snp.makeConstraints {
       $0.top.equalToSuperview().offset(32)
@@ -153,6 +156,10 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
       $0.height.equalTo(300)
     }
     
+    calendarView.snp.makeConstraints {
+      $0.edges.equalToSuperview().inset(8)
+    }
+    
     recordButton.snp.makeConstraints {
       $0.top.equalTo(calendarContainerView.snp.bottom).offset(24)
       $0.centerX.equalToSuperview()
@@ -162,6 +169,7 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
     }
   }
   
+ 
   override func bind(reactor: MyPageInfoReactor) {
     
     // State -> UI 바인딩
@@ -188,13 +196,21 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
       .bind(to: expLabel.rx.text)
       .disposed(by: disposeBag)
     
-    // 탭 진입시 리로드 트리거
-    self.rx.viewWillAppear.map { _ in .reloadUserStatus }
-      .bind(to: reactor.action)
+    reactor.state
+      .map(\.attendedDayKeys)
+      .distinctUntilChanged()
+      .bind(to: calendarView.rx.attendedDayKeys)
       .disposed(by: disposeBag)
+    
+    
+    self.rx.viewWillAppear.flatMap { _ in
+      Observable.of(.reloadUserStatus, .reloadAttendance)
+    }
+    .bind(to: reactor.action)
+    .disposed(by: disposeBag)
   }
-  
 }
+
 
 //@available(iOS 17.0, *)
 //#Preview {
