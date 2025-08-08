@@ -27,7 +27,7 @@ struct FetchUserDataService: FetchUserDataServiceProtocol {
 // Mock Data Testing Code
 struct StubUserDataService: FetchUserDataServiceProtocol {
   func fetchUserExp() -> UserExperience {
-    return UserExperience(exp: 36)
+    return UserExperience(exp: 11)
   }
   
   func fetchAttendance() -> [Attendance] {
