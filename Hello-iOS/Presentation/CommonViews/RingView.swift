@@ -38,7 +38,7 @@ final class RingView: UIView {
     // 중앙 라벨 기본 설정
     centerLabel.textAlignment = .center
     centerLabel.textColor = .label
-    centerLabel.font = .systemFont(ofSize: 16, weight: .medium)
+    centerLabel.font = .systemFont(ofSize: 22, weight: .bold)
     addSubview(centerLabel)
 
     // 공통 레이어 속성
