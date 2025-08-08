@@ -7,6 +7,8 @@ import RxSwift
 import SnapKit
 import Then
 
+import RealmSwift // 테스트용 임포트
+
 final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
   // 프로필 이미지 뷰
   private let profileImageView = UIImageView().then {
@@ -14,23 +16,21 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
     $0.layer.cornerRadius = 24
     $0.clipsToBounds = true
     $0.contentMode = .scaleAspectFill
-    $0.image = .egg
+    //    $0.image = .egg
   }
   // 레벨 라벨
   private let levelLabel = UILabel().then {
     $0.font = .boldSystemFont(ofSize: 24)
     $0.textAlignment = .center
-    $0.text = "Lv.1" // 임시
+    //    $0.text = "Lv.1" // 임시
   }
   // 경험치 바
-  private let expBar = UIProgressView(progressViewStyle: .default).then {
-    $0.progress = 0.3 // 임시
-  }
+  private let expBar = UIProgressView(progressViewStyle: .default)
   // 경험치 라벨
   private let expLabel = UILabel().then {
     $0.font = .systemFont(ofSize: 13)
     $0.textAlignment = .center
-    $0.text = "(3 / 10)" // 임시
+    //    $0.text = "(3 / 10)" // 임시
     $0.textColor = .secondaryLabel
   }
   // 출석 체크 라벨
@@ -94,7 +94,6 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
   }
   
   override func setupUI() {
-    view.backgroundColor = .systemBackground
     
     // 스크롤뷰 최우선 주입
     view.addSubview(scrollView)
@@ -161,6 +160,46 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
       $0.width.equalTo(200)
       $0.bottom.equalToSuperview().inset(24)
     }
-    
   }
+  
+  override func bind(reactor: MyPageInfoReactor) {
+    
+    // State -> UI 바인딩
+    reactor.state
+      .compactMap(\.userExp?.imageAssetName)
+      .distinctUntilChanged()
+      .bind { [weak self] assetName in
+        self?.profileImageView.image = UIImage(named: assetName)
+      }
+      .disposed(by: disposeBag)
+    
+    reactor.state.compactMap(\.userExp?.level.labelText)
+      .distinctUntilChanged()
+      .bind(to: levelLabel.rx.text)
+      .disposed(by: disposeBag)
+    
+    reactor.state.compactMap(\.userExp?.expProgress)
+      .distinctUntilChanged()
+      .bind(to: expBar.rx.progress)
+      .disposed(by: disposeBag)
+    
+    reactor.state.compactMap(\.userExp?.expLabel)
+      .distinctUntilChanged()
+      .bind(to: expLabel.rx.text)
+      .disposed(by: disposeBag)
+    
+    // 탭 진입시 리로드 트리거
+    self.rx.viewWillAppear.map { _ in .reloadUserStatus }
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
+  }
+  
 }
+
+//@available(iOS 17.0, *)
+//#Preview {
+//
+//  MyPageInfoViewController(
+//    reactor: MyPageInfoReactor(dataService: StubUserDataService())
+//  )
+//}
