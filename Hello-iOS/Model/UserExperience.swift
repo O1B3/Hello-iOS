@@ -50,8 +50,9 @@ struct UserExperience {
 }
 
 
+// 경험치 관련 값들
 extension UserExperience {
-  
+  // 경험치 범위
   var expRange: (Int, Int) {
     if level == .phoenix {
       return (30, 30)
@@ -67,6 +68,7 @@ extension UserExperience {
     return (expToNext, myExpInStage)
   }
   
+  // 프로그레스바에 보낼 Float 진행도
   var expProgress: Float {
     let (expToNext, myExpInStage) = expRange
     
@@ -74,6 +76,7 @@ extension UserExperience {
     return min(1.0, progress)
   }
   
+  // 경험치 상황에 따라 만들어질 라벨 텍스트 -> 만약 다른곳에서 다른 형태로 쓰이는 경우에는 View쪽 이동도 검토해봐야 함.
   var expLabel: String {
     let (expToNext, myExpInStage) = expRange
     let label = "(\(myExpInStage) / \(expToNext))"

@@ -23,10 +23,6 @@ MyPageInfoReactor.State
   
   // View의 상태 정의 (현재 View의 상태값)
   struct State {
-    //    var profileImageName: String?  // 프로필 이미지 네임
-    //    var levelText: String?         // 레벨 텍스트
-    //    var expProgress: Float?        // 프로그레스 바 진행정도
-    //    var expLabel: String?          // 경험치 라벨
     var userExp: UserExperience?
   }
   
@@ -35,9 +31,6 @@ MyPageInfoReactor.State
   // 생성자에서 초기 상태 설정
   init(dataService: FetchUserDataServiceProtocol) {
     self.userDataService = dataService
-    //    let user = userDataService.fetchUserExp()
-    //    let (expProgress, expLabel) = user.expProgressAndLabel()
-    
     super.init(initialState: State())
   }
   
