@@ -14,16 +14,20 @@ MyPageInfoReactor.State
   // 사용자 액션 정의 (사용자의 의도)
   enum Action {
     case reloadUserStatus // 유저 정보 리로드
+    case reloadAttendance // 출석 정보 리로드
   }
   
   // 상태변경 이벤트 정의 (상태를 어떻게 바꿀 것인가)
   enum Mutation {
     case setUserExperience(UserExperience?)
+    case setAttendance([Attendance])
   }
   
   // View의 상태 정의 (현재 View의 상태값)
   struct State {
-    var userExp: UserExperience?
+    var userExp: UserExperience?              // 유저 경험치
+    var attendances: [Attendance] = []        // 출석정보 원본
+    var attendedDayKeys: Set<String> = []     // 캘린더 마킹에 사용
   }
   
   let userDataService: FetchUserDataServiceProtocol
@@ -41,6 +45,9 @@ MyPageInfoReactor.State
     case .reloadUserStatus:
       let user = userDataService.fetchUserExp()
       return .just(.setUserExperience(user))
+    case .reloadAttendance:
+      let list = userDataService.fetchAttendance()
+      return .just(.setAttendance(list))
     }
   }
   
@@ -52,6 +59,11 @@ MyPageInfoReactor.State
     switch mutation {
     case let .setUserExperience(user):
       newState.userExp = user
+    case let .setAttendance(list):
+      newState.attendances = list
+      newState.attendedDayKeys = Set(
+        list.filter(\.isAttendance).map { DateKeyService.makeKey(from: $0.date) }
+      )
     }
     return newState
   }

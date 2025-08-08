@@ -17,13 +17,11 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor>, FSC
     $0.layer.cornerRadius = 24
     $0.clipsToBounds = true
     $0.contentMode = .scaleAspectFill
-    //    $0.image = .egg
   }
   // 레벨 라벨
   private let levelLabel = UILabel().then {
     $0.font = .boldSystemFont(ofSize: 24)
     $0.textAlignment = .center
-    //    $0.text = "Lv.1" // 임시
   }
   // 경험치 바
   private let expBar = UIProgressView(progressViewStyle: .default)
@@ -31,7 +29,6 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor>, FSC
   private let expLabel = UILabel().then {
     $0.font = .systemFont(ofSize: 13)
     $0.textAlignment = .center
-    //    $0.text = "(3 / 10)" // 임시
     $0.textColor = .secondaryLabel
   }
   // 출석 체크 라벨
@@ -194,10 +191,10 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor>, FSC
   
   // 달력 레이아웃 호출 리마인드
   override func viewDidLayoutSubviews() {
-      super.viewDidLayoutSubviews()
-      tintWeekdayHeader(of: calendarView)
+    super.viewDidLayoutSubviews()
+    tintWeekdayHeader(of: calendarView)
   }
-
+  
   override func bind(reactor: MyPageInfoReactor) {
     
     // State -> UI 바인딩
@@ -224,15 +221,27 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor>, FSC
       .bind(to: expLabel.rx.text)
       .disposed(by: disposeBag)
     
+    reactor.state
+      .map(\.attendedDayKeys)
+      .distinctUntilChanged()
+      .bind(with: self) { user, _ in
+        user.calendarView.reloadData()
+      }
+      .disposed(by: disposeBag)
+    
+    
     // 탭 진입시 리로드 트리거
     self.rx.viewWillAppear.map { _ in .reloadUserStatus }
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
+    
+    self.rx.viewWillAppear.map { _ in .reloadAttendance }
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
   }
-  
 }
 
-// MARK: - FSCalendar 날짜 숫자 색상
+// MARK: - FSCalendar 날짜 색상, 마킹 관련
 extension MyPageInfoViewController {
   func calendar(_ calendar: FSCalendar,
                 appearance: FSCalendarAppearance,
@@ -256,26 +265,59 @@ extension MyPageInfoViewController {
   
   // 요일 헤더 색
   func tintWeekdayHeader(of calendar: FSCalendar) {
-      let weekdayView = calendar.calendarWeekdayView
-      let labels = weekdayView.weekdayLabels
-      guard labels.count == 7 else { return }
-
-      func index(forWeekday weekday: Int) -> Int {
-          let first = Int(calendar.firstWeekday)
-          return ((weekday - first) % 7 + 7) % 7
-      }
-
-      for lbl in labels { lbl.textColor = .label }
-      labels[index(forWeekday: 1)].textColor = .systemRed   // 일
-      labels[index(forWeekday: 7)].textColor = .systemBlue  // 토
+    let weekdayView = calendar.calendarWeekdayView
+    let labels = weekdayView.weekdayLabels
+    guard labels.count == 7 else { return }
+    
+    func index(forWeekday weekday: Int) -> Int {
+      let first = Int(calendar.firstWeekday)
+      return ((weekday - first) % 7 + 7) % 7
+    }
+    
+    for lbl in labels { lbl.textColor = .label }
+    labels[index(forWeekday: 1)].textColor = .systemRed   // 일
+    labels[index(forWeekday: 7)].textColor = .systemBlue  // 토
   }
-
   
-  // 월이 바뀌면 다시 계산
+  // 스와이프로 월이 바뀔 때 리로드
   func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
     calendar.reloadData()
     tintWeekdayHeader(of: calendar) // 요일 헤더 라벨도 다시 칠함 (아래 3번)
   }
+  
+  // 마킹 정보 아래 점을 찍어주는 코드
+  func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
+    guard let keys = reactor?.currentState.attendedDayKeys else { return 0 }
+    return keys.contains(DateKeyService.makeKey(from: date)) ? 1 : 0
+  }
+  
+  // 점 색상 커스텀
+  func calendar(_ calendar: FSCalendar,
+                appearance: FSCalendarAppearance,
+                eventDefaultColorsFor date: Date) -> [UIColor]? {
+    guard let keys = reactor?.currentState.attendedDayKeys else { return nil }
+    return keys.contains(DateKeyService.makeKey(from: date)) ? [.main] : nil
+  }
+  
+  
+  // 마킹 날짜에 원형 색 넣어주는 함수
+  func calendar(_ calendar: FSCalendar,
+                appearance: FSCalendarAppearance,
+                fillDefaultColorFor date: Date) -> UIColor? {
+    let cal = Calendar(identifier: .gregorian)
+    // 오늘은 main색 마킹이 우선
+    if cal.isDateInToday(date) {
+      return .main
+    }
+    // 출석한 날은 sub색 마킹
+    if let keys = reactor?.currentState.attendedDayKeys,
+       keys.contains(DateKeyService.makeKey(from: date)) {
+      return .sub
+    }
+    // 없으면 마킹 X
+    return nil
+  }
+  
 }
 
 //@available(iOS 17.0, *)
