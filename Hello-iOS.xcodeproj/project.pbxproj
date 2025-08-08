@@ -701,11 +701,11 @@
 			package = E9145A872E45F863007C2167 /* XCRemoteSwiftPackageReference "Shuffle" */;
 			productName = Shuffle;
 		};
-        FEAC15F92E45EDFB00209390 /* RealmSwift */ = {
-            isa = XCSwiftPackageProductDependency;
-            package = E7E0608A2E42E6D90088BB28 /* XCRemoteSwiftPackageReference "realm-swift" */;
-            productName = RealmSwift;
-        };
+		FEAC15F92E45EDFB00209390 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E7E0608A2E42E6D90088BB28 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
 		FEDC26172E459C0200422130 /* FSCalendar */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FEDC26162E459C0200422130 /* XCRemoteSwiftPackageReference "FSCalendar" */;
