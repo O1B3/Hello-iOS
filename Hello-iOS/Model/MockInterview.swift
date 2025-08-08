@@ -27,13 +27,12 @@ struct MockInterviewRecord: Hashable {
   let myAnswer: String         // 내 답변
   let isSatisfied: Bool        // 만족 여부
   
-  // hashable 기준 id
+  // hashable에 groupId까지 같이 추가
   func hash(into hasher: inout Hasher) {
+    hasher.combine(groupId)
     hasher.combine(id)
   }
-  
-  // == 설정
-  static func == (lhs: MockInterviewRecord, rhs: MockInterviewRecord) -> Bool {
-    return lhs.id == rhs.id
+  static func == (l: Self, r: Self) -> Bool {
+    l.groupId == r.groupId && l.id == r.id
   }
 }
