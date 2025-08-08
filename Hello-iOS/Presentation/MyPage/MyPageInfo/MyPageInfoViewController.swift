@@ -169,7 +169,7 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
     }
   }
   
- 
+  
   override func bind(reactor: MyPageInfoReactor) {
     
     // State -> UI 바인딩
@@ -208,6 +208,17 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
     }
     .bind(to: reactor.action)
     .disposed(by: disposeBag)
+    
+    recordButton.rx.tap
+      .throttle(.milliseconds(400), scheduler: MainScheduler.instance)
+      .withUnretained(self)
+      .bind { `self`, _ in
+        let myRecordsVC = MyRecordsViewController(
+          reactor: MyRecordsReactor(dataService: StubRecordDataService())
+        )
+        self.navigationController?.pushViewController(myRecordsVC, animated: true)
+      }
+      .disposed(by: disposeBag)
   }
 }
 
