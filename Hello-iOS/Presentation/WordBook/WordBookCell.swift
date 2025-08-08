@@ -36,7 +36,7 @@ class WordBookCell: UICollectionViewCell {
   override init(frame: CGRect) {
     super.init(frame: frame)
 
-    addSubview(verticalStackView)
+    contentView.addSubview(verticalStackView)
     verticalStackView.addArrangedSubview(titleLabel)
     verticalStackView.addArrangedSubview(progressLabel)
     verticalStackView.addArrangedSubview(progressView)
@@ -50,7 +50,7 @@ class WordBookCell: UICollectionViewCell {
     }
 
     titleLabel.snp.makeConstraints {
-      $0.height.equalTo(titleLabel.font.lineHeight)
+      $0.height.greaterThanOrEqualTo(titleLabel.font.lineHeight)
     }
 
     verticalStackView.snp.makeConstraints {

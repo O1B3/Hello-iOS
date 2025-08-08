@@ -20,4 +20,8 @@ WordBookReactor.State
   enum Mutation {}
 
   struct State {}
+
+  init() {
+    super.init(initialState: State())
+  }
 }

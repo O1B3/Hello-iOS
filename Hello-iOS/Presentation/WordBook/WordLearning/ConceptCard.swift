@@ -87,6 +87,14 @@ class ConceptCard: SwipeCard {
     fatalError("init(coder:) has not been implemented")
   }
 
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    self.layer.shadowPath = UIBezierPath(
+      roundedRect: self.cardView.bounds,
+      cornerRadius: self.cardView.layer.cornerRadius
+    ).cgPath
+  }
+
   private func setupCardView() {
 
     content = cardView
@@ -119,7 +127,7 @@ class ConceptCard: SwipeCard {
 
     conceptLabel.snp.makeConstraints {
       $0.top.bottom.equalToSuperview()
-      $0.leading.trailing.equalToSuperview().inset(10)
+      $0.top.bottom.leading.trailing.equalToSuperview().inset(10)
     }
 
     scrollView.contentLayoutGuide.snp.makeConstraints {
