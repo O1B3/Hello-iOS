@@ -1,6 +1,7 @@
 
 import UIKit
 
+import FSCalendar
 import ReactorKit
 import RxCocoa
 import RxSwift
@@ -9,7 +10,7 @@ import Then
 
 import RealmSwift // 테스트용 임포트
 
-final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
+final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor>, FSCalendarDataSource, FSCalendarDelegate, FSCalendarDelegateAppearance {
   // 프로필 이미지 뷰
   private let profileImageView = UIImageView().then {
     $0.backgroundColor = .systemGray5
@@ -40,6 +41,26 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
     $0.text = "출석 체크"
   }
   // 캘린더 영역
+  private let calendarView = FSCalendar().then {
+    // 보편 설정
+    $0.locale = Locale(identifier: "ko_KR")
+    $0.scrollDirection = .horizontal
+    $0.scope = .month
+    // 헤더/요일 높이 적당히
+    $0.headerHeight = 44
+    $0.weekdayHeight = 22
+    // 간단한 스타일
+    $0.appearance.headerDateFormat = "YYYY년 M월"
+    $0.appearance.headerTitleAlignment = .center
+    $0.appearance.headerTitleFont = .boldSystemFont(ofSize: 16)
+    $0.appearance.headerTitleColor = .label
+    $0.appearance.weekdayFont = .systemFont(ofSize: 12, weight: .medium)
+    $0.appearance.weekdayTextColor = .label
+    $0.appearance.todayColor = .main
+    $0.appearance.selectionColor = .correct
+    $0.appearance.titlePlaceholderColor = .tertiaryLabel
+  }
+  
   private let calendarContainerView = UIView().then {
     $0.backgroundColor = .secondarySystemBackground
     $0.layer.cornerRadius = 16
@@ -120,6 +141,11 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
     contentView.addSubview(calendarContainerView)
     contentView.addSubview(recordButton)
     
+    // 캘린더 뷰 관련 주입요소
+    calendarContainerView.addSubview(calendarView)
+    calendarView.dataSource = self
+    calendarView.delegate = self
+    
     // 오토레이아웃 영역
     profileImageView.snp.makeConstraints {
       $0.top.equalToSuperview().offset(32)
@@ -153,6 +179,10 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
       $0.height.equalTo(300)
     }
     
+    calendarView.snp.makeConstraints {
+      $0.edges.equalToSuperview().inset(8)
+    }
+    
     recordButton.snp.makeConstraints {
       $0.top.equalTo(calendarContainerView.snp.bottom).offset(24)
       $0.centerX.equalToSuperview()
@@ -162,6 +192,12 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
     }
   }
   
+  // 달력 레이아웃 호출 리마인드
+  override func viewDidLayoutSubviews() {
+      super.viewDidLayoutSubviews()
+      tintWeekdayHeader(of: calendarView)
+  }
+
   override func bind(reactor: MyPageInfoReactor) {
     
     // State -> UI 바인딩
@@ -194,6 +230,52 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
       .disposed(by: disposeBag)
   }
   
+}
+
+// MARK: - FSCalendar 날짜 숫자 색상
+extension MyPageInfoViewController {
+  func calendar(_ calendar: FSCalendar,
+                appearance: FSCalendarAppearance,
+                titleDefaultColorFor date: Date) -> UIColor? {
+    
+    let cal = Calendar(identifier: .gregorian)
+    // 이번 달 여부 판단 (currentPage 기준)
+    let isInCurrentMonth = cal.isDate(date, equalTo: calendar.currentPage, toGranularity: .month)
+    guard isInCurrentMonth else {
+      // 이번 달 외 날짜는 회색(placeholder)
+      return appearance.titlePlaceholderColor // ex) 사전에 .tertiaryLabel로 지정해둠
+    }
+    
+    // 주말/평일 색
+    switch cal.component(.weekday, from: date) {
+    case 1:  return .systemRed   // Sun
+    case 7:  return .systemBlue  // Sat
+    default: return .label       // Mon~Fri
+    }
+  }
+  
+  // 요일 헤더 색
+  func tintWeekdayHeader(of calendar: FSCalendar) {
+      let weekdayView = calendar.calendarWeekdayView
+      let labels = weekdayView.weekdayLabels
+      guard labels.count == 7 else { return }
+
+      func index(forWeekday weekday: Int) -> Int {
+          let first = Int(calendar.firstWeekday)
+          return ((weekday - first) % 7 + 7) % 7
+      }
+
+      for lbl in labels { lbl.textColor = .label }
+      labels[index(forWeekday: 1)].textColor = .systemRed   // 일
+      labels[index(forWeekday: 7)].textColor = .systemBlue  // 토
+  }
+
+  
+  // 월이 바뀌면 다시 계산
+  func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
+    calendar.reloadData()
+    tintWeekdayHeader(of: calendar) // 요일 헤더 라벨도 다시 칠함 (아래 3번)
+  }
 }
 
 //@available(iOS 17.0, *)
