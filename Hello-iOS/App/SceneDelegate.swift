@@ -64,9 +64,6 @@ extension SceneDelegate {
     
     let interviewVC: InterviewViewController = container.resolve()
     let myPageVC: MyPageInfoViewController = container.resolve()
-    
-    let wordBookVC = UIViewController()
-    let myPageVC = UIViewController()
     let wordBookVC: WordBookViewController = container.resolve()
     let tabBarController = UITabBarController()
 
