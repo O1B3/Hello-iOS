@@ -9,6 +9,7 @@ enum DateKeyService {
     f.locale = Locale(identifier: "ko_KR")
     f.timeZone = TimeZone(secondsFromGMT: 9*3600) // Asia/Seoul
     f.dateFormat = "yyyy-MM-dd"
+    Calendar.current.startOfDay(for: Date())
     return f
   }()
   static func makeKey(from date: Date) -> String { fmt.string(from: date) }

@@ -26,7 +26,6 @@ MyPageInfoReactor.State
   // View의 상태 정의 (현재 View의 상태값)
   struct State {
     var userExp: UserExperience?              // 유저 경험치
-    var attendances: [Attendance] = []        // 출석정보 원본
     var attendedDayKeys: Set<String> = []     // 캘린더 마킹에 사용
   }
   
@@ -60,9 +59,9 @@ MyPageInfoReactor.State
     case let .setUserExperience(user):
       newState.userExp = user
     case let .setAttendance(list):
-      newState.attendances = list
       newState.attendedDayKeys = Set(
         list.filter(\.isAttendance).map { DateKeyService.makeKey(from: $0.date) }
+//        list.filter(\.isAttendance).map { Calendar.current.startOfDay(for: $0.date) }
       )
     }
     return newState
