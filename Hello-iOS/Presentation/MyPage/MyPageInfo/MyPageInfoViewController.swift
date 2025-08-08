@@ -92,7 +92,7 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
   required init?(coder _: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-    
+  
   override func setupUI() {
     
     // 스크롤뷰 최우선 주입
@@ -163,40 +163,42 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
   }
   
   override func bind(reactor: MyPageInfoReactor) {
-    // 탭 진입시 리로드 트리거
-    self.rx.viewWillAppear.map { _ in .reloadUserStatus }
-      .bind(to: reactor.action)
-      .disposed(by: disposeBag)
     
     // State -> UI 바인딩
     reactor.state
-      .map(\.profileImageName)
+      .compactMap(\.userExp?.imageAssetName)
       .distinctUntilChanged()
       .bind { [weak self] assetName in
         self?.profileImageView.image = UIImage(named: assetName)
       }
       .disposed(by: disposeBag)
     
-    reactor.state.map(\.levelText)
+    reactor.state.compactMap(\.userExp?.level.labelText)
       .distinctUntilChanged()
       .bind(to: levelLabel.rx.text)
       .disposed(by: disposeBag)
     
-    reactor.state.map(\.expProgress)
+    reactor.state.compactMap(\.userExp?.expProgress)
       .distinctUntilChanged()
       .bind(to: expBar.rx.progress)
       .disposed(by: disposeBag)
     
-    reactor.state.map(\.expLabel)
+    reactor.state.compactMap(\.userExp?.expLabel)
       .distinctUntilChanged()
       .bind(to: expLabel.rx.text)
       .disposed(by: disposeBag)
+    
+    // 탭 진입시 리로드 트리거
+    self.rx.viewWillAppear.map { _ in .reloadUserStatus }
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
   }
+  
 }
 
 //@available(iOS 17.0, *)
 //#Preview {
-//  
+//
 //  MyPageInfoViewController(
 //    reactor: MyPageInfoReactor(dataService: StubUserDataService())
 //  )

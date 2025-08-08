@@ -49,27 +49,37 @@ struct UserExperience {
   }
 }
 
+
 extension UserExperience {
-  func expProgressAndLabel() -> (Float, String) {
-    let (base, next) = {
-      switch self.level {
-      case .egg: return (0, 10)
-      case .chick: return (10, 20)
-      case .hen: return (20, 30)
-      case .phoenix: return (30, 30) // 만렙 구간도 40~40으로 고정
-      }
-    }()
+  
+  var expRange: (Int, Int) {
+    if level == .phoenix {
+      return (30, 30)
+    }
+    let (base, next) = switch self.level {
+    case .egg: (0, 10)
+    case .chick: (10, 20)
+    case .hen: (20, 30)
+    case .phoenix: (30, 30)
+    }
     let expToNext = next - base
     let myExpInStage = exp - base
-    
-    if self.level == .phoenix {
-      // 만렙: 40/40로 고정
-      return (1.0, "(30 / 30)")
-    }
-    let progress = Float(myExpInStage) / Float(expToNext)
-    let label = "(\(myExpInStage) / \(expToNext))"
-    return (progress, label)
+    return (expToNext, myExpInStage)
   }
+  
+  var expProgress: Float {
+    let (expToNext, myExpInStage) = expRange
+    
+    let progress = Float(myExpInStage) / Float(expToNext)
+    return min(1.0, progress)
+  }
+  
+  var expLabel: String {
+    let (expToNext, myExpInStage) = expRange
+    let label = "(\(myExpInStage) / \(expToNext))"
+    return label
+  }
+  
 }
 
 

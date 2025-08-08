@@ -18,20 +18,16 @@ MyPageInfoReactor.State
   
   // 상태변경 이벤트 정의 (상태를 어떻게 바꿀 것인가)
   enum Mutation {
-    case setAll(
-      profileImageName: String,
-      levelText: String,
-      expProgress: Float,
-      expLabel: String,
-    )
+    case setUserExperience(UserExperience?)
   }
   
   // View의 상태 정의 (현재 View의 상태값)
   struct State {
-    var profileImageName: String  // 프로필 이미지 네임
-    var levelText: String         // 레벨 텍스트
-    var expProgress: Float        // 프로그레스 바 진행정도
-    var expLabel: String          // 경험치 라벨
+    //    var profileImageName: String?  // 프로필 이미지 네임
+    //    var levelText: String?         // 레벨 텍스트
+    //    var expProgress: Float?        // 프로그레스 바 진행정도
+    //    var expLabel: String?          // 경험치 라벨
+    var userExp: UserExperience?
   }
   
   let userDataService: FetchUserDataServiceProtocol
@@ -39,15 +35,10 @@ MyPageInfoReactor.State
   // 생성자에서 초기 상태 설정
   init(dataService: FetchUserDataServiceProtocol) {
     self.userDataService = dataService
-    let user = userDataService.fetchUserExp()
-    let (expProgress, expLabel) = user.expProgressAndLabel()
+    //    let user = userDataService.fetchUserExp()
+    //    let (expProgress, expLabel) = user.expProgressAndLabel()
     
-    super.init(initialState: State(
-      profileImageName: user.imageAssetName,
-      levelText: user.level.labelText,
-      expProgress: expProgress,
-      expLabel: expLabel,
-    ))
+    super.init(initialState: State())
   }
   
   // Action이 들어왔을 때 어떤 Mutation으로 바뀔지 정의
@@ -56,13 +47,7 @@ MyPageInfoReactor.State
     switch action {
     case .reloadUserStatus:
       let user = userDataService.fetchUserExp()
-      let (expProgress, expLabel) = user.expProgressAndLabel()
-      return .just(.setAll(
-        profileImageName: user.imageAssetName,
-        levelText: user.level.labelText,
-        expProgress: expProgress,
-        expLabel: expLabel
-      ))
+      return .just(.setUserExperience(user))
     }
   }
   
@@ -72,11 +57,8 @@ MyPageInfoReactor.State
   override func reduce(state: State, mutation: Mutation) -> State {
     var newState = state
     switch mutation {
-    case let .setAll(profileImageName, levelText, expProgress, expLabel):
-      newState.profileImageName = profileImageName
-      newState.levelText = levelText
-      newState.expProgress = expProgress
-      newState.expLabel = expLabel
+    case let .setUserExperience(user):
+      newState.userExp = user
     }
     return newState
   }
