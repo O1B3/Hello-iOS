@@ -1,5 +1,5 @@
 //
-//  WordBookReactor.swift
+//  WordLearningReactor.swift
 //  Hello-iOS
 //
 //  Created by seongjun cho on 8/7/25.
