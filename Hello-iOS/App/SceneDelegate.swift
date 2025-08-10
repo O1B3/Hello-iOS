@@ -54,9 +54,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 extension SceneDelegate {
   func makeTabBarController() -> UITabBarController {
     let container = DIContainer.shared
+    container.register(WordLearningViewController())
     container.register(InterviewViewController(reactor: InterviewReactor()))
-    container.register(WordBookViewController())
-
+    container.register(WordBookViewController(reactor: WordBookReactor()))
     container
       .register(
         MyPageInfoViewController(reactor: MyPageInfoReactor(dataService: StubUserDataService()))
@@ -108,6 +108,7 @@ extension SceneDelegate {
 
     UINavigationBar.appearance().standardAppearance = topAppearance
     UINavigationBar.appearance().scrollEdgeAppearance = topAppearance
+    UINavigationBar.appearance().tintColor = .main
 
     return tabBarController
   }

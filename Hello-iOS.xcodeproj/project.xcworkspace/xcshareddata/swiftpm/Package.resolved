@@ -1,5 +1,5 @@
 {
-  "originHash" : "fe782711657b11bb646c957dbc1f91f660cb7970defbc9715f0b77d5354e9d5f",
+  "originHash" : "270b70679b31bbef5cee1d3efad40cdde5451bc05a8658419b9210e947c8cfb3",
   "pins" : [
     {
       "identity" : "fscalendar",
@@ -53,6 +53,15 @@
       "state" : {
         "revision" : "5dd1907d64f0d36f158f61a466bab75067224893",
         "version" : "6.9.0"
+      }
+    },
+    {
+      "identity" : "shuffle",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mac-gallagher/Shuffle",
+      "state" : {
+        "branch" : "master",
+        "revision" : "df246b9cd6b8b5e021b23c80706b4a4571785c1b"
       }
     },
     {

@@ -46,7 +46,7 @@ final class WordBookView: UIView {
 
       let group = NSCollectionLayoutGroup.vertical(
         layoutSize: .init(widthDimension: .fractionalWidth(1.0),
-                          heightDimension: .absolute(106)),
+                          heightDimension: .absolute(114)),
         subitems: [item])
 
       let section = NSCollectionLayoutSection(group: group)
