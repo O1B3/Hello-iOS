@@ -9,7 +9,17 @@ import Foundation
 
 import Supabase
 
-class LearningRepository {
+protocol LearningRepositoryProtocol {
+  func fetchAllData() async throws -> [Categories]
+
+  func fetchRectlyAllData(RectlyUpdateDate: Date) async throws -> [Categories]
+
+  func fetchRectlyConcepts(RectlyUpdateDate: Date) async throws -> [Concept]
+
+  func fetchLatestUpdateTime() async throws -> Date
+}
+
+class LearningRepository: LearningRepositoryProtocol {
   private let client: SupabaseClient
 
   init() {
@@ -39,6 +49,19 @@ class LearningRepository {
     return categories
   }
 
+  func fetchRectlyAllData(RectlyUpdateDate: Date) async throws -> [Categories] {
+    var concepts = [Categories]()
+
+    concepts = try await client
+      .from("categories")
+      .select("*, concepts(*, qnas(*))")
+      .gte("latest_update", value: RectlyUpdateDate.dateToTimeStamptz())
+      .execute()
+      .value
+
+    return concepts
+  }
+
   func fetchRectlyConcepts(RectlyUpdateDate: Date) async throws -> [Concept] {
     var concepts = [Concept]()
 
@@ -50,5 +73,17 @@ class LearningRepository {
       .value
 
     return concepts
+  }
+
+  func fetchLatestUpdateTime() async throws -> Date {
+    var date = [Date]()
+
+    date = try await client
+      .from("Recently_update_time")
+      .select("*")
+      .execute()
+      .value
+
+    return date.first ?? Date()
   }
 }
