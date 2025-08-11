@@ -17,6 +17,11 @@ final class DIContainer {
     services[key] = service
   }
 
+  func register<T>(type: T.Type, _ service: @autoclosure @escaping () -> Any) {
+    let key = String(describing: type)
+    services[key] = service
+  }
+
   // 저장된 클로저를 실행하여 새로운 객체를 생성하고 반환
   func resolve<T>() -> T {
     let key = String(describing: T.self)

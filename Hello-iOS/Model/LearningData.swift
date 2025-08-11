@@ -12,6 +12,14 @@ public struct Categories: Codable {
   public let id: Int
   public let category: String
   public let concepts: [Concept]?   // 중첩 조회 시에만 포함
+  public let latestUpdate: Date
+
+  enum CodingKeys: String, CodingKey {
+    case id
+    case category
+    case concepts
+    case latestUpdate = "latest_update"
+  }
 }
 
 // MARK: –– 컨셉(개념) 모델
