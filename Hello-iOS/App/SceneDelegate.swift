@@ -132,14 +132,25 @@ extension SceneDelegate {
           // 데이터 업데이트 작업
           /// 최신 데이터 요청
           let recentlyData = try await learningService.requestRecentlyData()
-          /// ToDo: 데이터 저장
-
+          /// 데이터 저장
+          saveData(data: recentlyData)
           /// 데이터 갱신시간 등록
           learningService.setLatestUpdateTimeNow()
         }
       } catch {
         print("⚠️ SceneDelegate 데이터 업데이트 오류: \(error)")
       }
+    }
+  }
+
+  func saveData(data: [Categories]) {
+    let realmService = RealmService()
+    let domainData = data.map { RealmCategory(from: $0.toDomain()) }
+
+    do {
+      try realmService.upsert(domainData)
+    } catch {
+      print("⚠️ SceneDelegate upsert 오류: \(error)")
     }
   }
 }

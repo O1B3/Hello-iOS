@@ -59,3 +59,41 @@ public struct QnA: Codable {
     case latestUpdate = "latest_update"
   }
 }
+
+// MARK: - Mappers to Domain
+extension Categories {
+    func toDomain() -> DomainCategories {
+        return DomainCategories(
+            id: self.id,
+            category: self.category,
+            concepts: self.concepts?.map { $0.toDomain() } ?? [],
+            latestUpdate: self.latestUpdate
+        )
+    }
+}
+
+extension Concept {
+    func toDomain() -> DomainConcept {
+        return DomainConcept(
+            id: self.id,
+            categoryId: self.categoryId,
+            concept: self.concept,
+            explain: self.explain,
+            latestUpdate: self.latestUpdate,
+            isMemory: false, // 기본값 설정, 필요시 로직 추가
+            qnas: self.qnas?.map { $0.toDomain() } ?? []
+        )
+    }
+}
+
+extension QnA {
+    func toDomain() -> DomainQnA {
+        return DomainQnA(
+            id: self.id,
+            conceptId: self.conceptId,
+            question: self.question,
+            answer: self.answer,
+            latestUpdate: self.latestUpdate
+        )
+    }
+}
