@@ -12,11 +12,6 @@ InterviewReactor.Action,
 InterviewReactor.Mutation,
 InterviewReactor.State
 > {
-  // 모의면접 모드
-  enum InterviewMode {
-    case myStudy
-    case review
-  }
 
   // 사용자 액션 정의 (사용자의 의도)
   enum Action {
