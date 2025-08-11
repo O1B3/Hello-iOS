@@ -127,7 +127,7 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
           sheet.prefersGrabberVisible = true
           sheet.preferredCornerRadius = 20
         }
-        self?.present(detailVC, animated: true)
+        self?.present(UINavigationController(rootViewController: detailVC), animated: true)
       }
       .disposed(by: disposeBag)
     

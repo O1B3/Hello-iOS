@@ -9,6 +9,11 @@ import Then
 
 final class RecordDetailViewController: BaseViewController<RecordDetailReactor> {
   
+  private let closeButton = UIButton(configuration: .plain()).then {
+    $0.configuration?.title = "닫기"
+    $0.configuration?.baseForegroundColor = .systemRed
+  }
+  
   private let scrollView = UIScrollView()
   private let stackView = UIStackView()
   
@@ -24,6 +29,8 @@ final class RecordDetailViewController: BaseViewController<RecordDetailReactor> 
   
   override func setupUI() {
     view.backgroundColor = .systemBackground
+    
+    navigationItem.leftBarButtonItem = UIBarButtonItem(customView: closeButton)
     navigationItem.title = "기록 상세"
     
     view.addSubview(scrollView)
@@ -41,6 +48,12 @@ final class RecordDetailViewController: BaseViewController<RecordDetailReactor> 
   }
   
   override func bind(reactor: RecordDetailReactor) {
+    
+    closeButton.rx.tap
+      .bind { [weak self] in
+        self?.dismiss(animated: true)
+      }
+      .disposed(by: disposeBag)
     
     reactor.state.subscribe(onNext: { [weak self] state in
       guard let self else { return }
