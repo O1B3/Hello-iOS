@@ -21,16 +21,27 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
     $0.layer.masksToBounds = false
   }
 
-  private let myStudyInterviewButton = ShadowButton().then {
-    $0.setTitle("내 학습 기반 모의 면접", for: .normal)
+  private let myStudyInterviewButton = SelectButton().then {
+    $0.configure(
+      title: "내 학습 기반\n모의 면접",
+      subtitle: "등록한 단어·질문으로 테스트",
+      iconName: "graduationcap.fill",
+      backgroundColor: UIColor.main
+    )
   }
 
-  private let reviewInterviewButton = ShadowButton().then {
-    $0.setTitle("복습 모의 면접", for: .normal)
+  private let reviewInterviewButton = SelectButton().then {
+    $0.configure(
+      title: "복습 모의 면접",
+      subtitle: "불만족 질문 다시 도전",
+      iconName: "arrow.clockwise",
+      backgroundColor: UIColor.sub
+    )
   }
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    navigationItem.title = "모의 면접 시작하기"
     setupUI()
     setConstraints()
   }
@@ -54,7 +65,8 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
   //  레이아웃 설정
   private func setConstraints() {
     buttonStackView.snp.makeConstraints {
-      $0.directionalEdges.equalTo(view.safeAreaLayoutGuide).inset(16)
+      $0.top.bottom.equalTo(view.safeAreaLayoutGuide).inset(100)
+      $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(16)
     }
   }
 
