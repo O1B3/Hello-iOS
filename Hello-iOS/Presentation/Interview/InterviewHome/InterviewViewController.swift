@@ -72,7 +72,6 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
     reactor.pulse(\.$selectedMode)
       .bind(with: self) { owner, mode in
         let container = DIContainer.shared
-        container.register(SelectionInterviewViewController(reactor: SelectionInterviewReactor()))
         let SelectionInterviewVC: SelectionInterviewViewController = container.resolve()
         owner.navigationController?.pushViewController(SelectionInterviewVC, animated: true)
       }
