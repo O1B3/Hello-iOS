@@ -606,8 +606,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-swift.git";
 			requirement = {
-				kind = exactVersion;
-				version = 10.53.0;
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.53.0;
 			};
 		};
 		E7E0608D2E42E7240088BB28 /* XCRemoteSwiftPackageReference "ReactorKit" */ = {
@@ -638,8 +638,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RxSwiftCommunity/RxRealm";
 			requirement = {
-				kind = exactVersion;
-				version = 5.0.7;
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.7;
 			};
 		};
 		FEDC26162E459C0200422130 /* XCRemoteSwiftPackageReference "FSCalendar" */ = {

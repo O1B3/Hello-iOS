@@ -1,5 +1,5 @@
 {
-  "originHash" : "5e9b4b481351f91404566fb8e4e6f7525a221ece4480214108c4b2f6e6851ed7",
+  "originHash" : "7412d9d8eaba44e78ea6dfcfb15b46bfaea52f14d49c289ec6823d94da43585f",
   "pins" : [
     {
       "identity" : "fscalendar",
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-core.git",
       "state" : {
-        "revision" : "c2552e1d36867cb42b28130e894a81fc17081062",
-        "version" : "14.12.0"
+        "revision" : "cccb3ca9e26ec452a29f2f0d4050d1e38b8a3d43",
+        "version" : "14.14.0"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-swift.git",
       "state" : {
-        "revision" : "9815e6c29d43cb5314add5dff8705c5476ab556c",
-        "version" : "10.53.0"
+        "revision" : "54eebd2b5e7a4a8055a7a8b55ac859a48462d722",
+        "version" : "10.54.5"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RxSwiftCommunity/RxRealm",
       "state" : {
-        "revision" : "607bbee57d664dfa762c87e4917c7d98cdb05e2f",
-        "version" : "5.0.7"
+        "revision" : "267cc8b587a5d5c74b57105050f9838cf20e2541",
+        "version" : "5.1.0"
       }
     },
     {
