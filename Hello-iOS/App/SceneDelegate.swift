@@ -56,9 +56,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 extension SceneDelegate {
   func makeTabBarController() -> UITabBarController {
     let container = DIContainer.shared
-    container.register(WordLearningViewController())
     container.register(InterviewViewController(reactor: InterviewReactor()))
-    container.register(WordBookViewController(reactor: WordBookReactor()))
     container
       .register(
         MyPageInfoViewController(reactor: MyPageInfoReactor(dataService: StubUserDataService()))
@@ -117,8 +115,15 @@ extension SceneDelegate {
 
   func registerObjects() {
     let container = DIContainer.shared
+
+    // WordLearning
     container.register(type: LearningRepositoryProtocol.self, LearningRepository())
     container.register(LearningService(learningRepository: container.resolve()))
+    container.register(WordLearningViewController())
+
+    // WordBook
+    container.register(WordBookReactor(realmService: RealmService()))
+    container.register(WordBookViewController(reactor: container.resolve()))
   }
 
   func updateRecentlyData() {
