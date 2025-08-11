@@ -213,8 +213,9 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
       .throttle(.milliseconds(400), scheduler: MainScheduler.instance)
       .withUnretained(self)
       .bind { `self`, _ in
+        
         let myRecordsVC = MyRecordsViewController(
-          reactor: MyRecordsReactor(dataService: StubRecordDataService())
+          reactor: MyRecordsReactor()
         )
         self.navigationController?.pushViewController(myRecordsVC, animated: true)
       }

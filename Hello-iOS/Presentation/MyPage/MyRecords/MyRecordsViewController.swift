@@ -15,13 +15,7 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
     $0.configuration?.title = "전체 삭제"
     $0.configuration?.baseForegroundColor = .systemRed
   }
-  
-  private let TitleLabel = UILabel().then {
-      $0.text = "모의 면접 기록"
-      $0.font = .systemFont(ofSize: 22, weight: .bold)
-      $0.textColor = .label
-  }
-  
+   
   private enum Section { case main }
   
   lazy var collectionView = UICollectionView(
@@ -44,7 +38,7 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
   }
   
   override func setupUI() {
-    navigationItem.titleView = TitleLabel
+    navigationItem.title = "모의 면접 기록"
     navigationItem.rightBarButtonItem = UIBarButtonItem(customView: clearAllButton)
     
     view.addSubview(collectionView)

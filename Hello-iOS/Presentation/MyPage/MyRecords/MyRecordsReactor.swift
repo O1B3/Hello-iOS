@@ -42,8 +42,8 @@ MyRecordsReactor.State
   }()
   
   // 생성자에서 초기 상태 설정
-  init(dataService: RecordDataServiceProtocol) {
-    self.recordDataService = dataService
+  init() {
+    self.recordDataService = DIContainer.shared.resolve()
     super.init(initialState: State())
   }
   
