@@ -117,11 +117,8 @@ extension SceneDelegate {
 
   func registerObjects() {
     let container = DIContainer.shared
-
-    container
-      .register(
-        LearningService(learningRepository: LearningRepository())
-      )
+    container.register(type: LearningRepositoryProtocol.self, LearningRepository())
+    container.register(LearningService(learningRepository: container.resolve()))
   }
 
   func updateRecentlyData() {
