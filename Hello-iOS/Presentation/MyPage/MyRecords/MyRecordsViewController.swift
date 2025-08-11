@@ -83,13 +83,32 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
     
-    collectionView.rx.itemSelected
+    let selectedGroup = collectionView.rx.itemSelected
       .withUnretained(dataSource)
       .compactMap { dataSource, indexPath in
         dataSource.itemIdentifier(for: indexPath)?.id
       }
-      .map { .selectGroup($0) }   // 선택한 그룹 id 전달
+      .share()
+    
+    selectedGroup
+      .map { .selectGroup($0) }
       .bind(to: reactor.action)
+      .disposed(by: disposeBag)
+    
+    selectedGroup
+      .bind { [weak self] group in
+        let reactor = RecordDetailReactor()
+        let detailVC = RecordDetailViewController(reactor: reactor)
+        detailVC.modalPresentationStyle = .pageSheet
+        detailVC.modalTransitionStyle = .coverVertical
+        
+        if let sheet = detailVC.sheetPresentationController {
+          sheet.detents = [.large()]
+          sheet.prefersGrabberVisible = true
+          sheet.preferredCornerRadius = 20
+        }
+        self?.present(detailVC, animated: true)
+      }
       .disposed(by: disposeBag)
     
     reactor.state
