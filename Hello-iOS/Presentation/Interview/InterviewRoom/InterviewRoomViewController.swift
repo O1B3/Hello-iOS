@@ -43,7 +43,6 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
     $0.numberOfLines = 0
     $0.backgroundColor = .clear
     $0.font = .systemFont(ofSize: 23, weight: .bold)
-    $0.text = "Array에 대해서 설명해주세요 Array에 대해서 설명해주세요 Array에 대해서 설명해주세요 Array에 대해서 설명해주세요."
   }
 
   private let interviewerImageView = UIImageView().then {
@@ -146,6 +145,15 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
     micButton.rx.tap
       .map { InterviewRoomReactor.Action.toggleRecording}
       .bind(to: reactor.action)
+      .disposed(by: disposeBag)
+
+    rightButton.rx.tap
+      .withUnretained(self)
+      .bind { owner, _ in
+        let container = DIContainer.shared
+        let ResultInterviewVC: ResultInterviewViewController = container.resolve()
+        owner.navigationController?.pushViewController(ResultInterviewVC, animated: true)
+      }
       .disposed(by: disposeBag)
 
     reactor.state
