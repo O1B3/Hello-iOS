@@ -46,10 +46,9 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
   }
 
   private let interviewerImageView = UIImageView().then {
-    let config = UIImage.SymbolConfiguration(pointSize: 40, weight: .medium)
-    $0.image = UIImage(systemName: "person", withConfiguration: config)
+    $0.image = .interviewer
     $0.contentMode = .scaleAspectFit
-    $0.layer.cornerRadius = 50
+    $0.layer.cornerRadius = 75
     $0.tintColor = .main
     $0.backgroundColor = .card
     $0.clipsToBounds = true
@@ -126,7 +125,7 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
     interviewerImageView.snp.makeConstraints {
       $0.top.equalTo(questionStackView.snp.bottom).offset(12)
       $0.centerX.equalToSuperview()
-      $0.height.width.equalTo(100)
+      $0.height.width.equalTo(150)
     }
 
     myAnswerTextView.snp.makeConstraints {
