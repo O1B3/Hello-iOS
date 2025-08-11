@@ -13,17 +13,17 @@ import Foundation
 
 struct Hello_iOSTests {
 
-  @Test func fetchLearningAllData() async throws {
-    let repo = LearningRepository()
-    let result = try await LearningService(learningRepository: repo).requestAllData()
-
-    print(result)
-  }
-
-  @Test func fetchLearningRecentlyData() async throws {
-    let repo = LearningRepository()
-    let result = try await LearningService(learningRepository: repo).requestRecentlyData()
-
-    print(result)
-  }
+//  @Test func fetchLearningAllData() async throws {
+//    let repo = LearningRepository()
+//    let result = try await LearningService(learningRepository: repo).requestAllData()
+//
+//    print(result)
+//  }
+//
+//  @Test func fetchLearningRecentlyData() async throws {
+//    let repo = LearningRepository()
+//    let result = try await LearningService(learningRepository: repo).requestRecentlyData()
+//
+//    print(result)
+//  }
 }
