@@ -9,7 +9,19 @@ import SnapKit
 import Then
 
 final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
-  // UI
+  
+  
+  private let clearAllButton = UIButton(configuration: .plain()).then {
+    $0.configuration?.title = "전체 삭제"
+    $0.configuration?.baseForegroundColor = .systemRed
+  }
+  
+  private let TitleLabel = UILabel().then {
+      $0.text = "모의 면접 기록"
+      $0.font = .systemFont(ofSize: 22, weight: .bold)
+      $0.textColor = .label
+  }
+  
   private enum Section { case main }
   
   lazy var collectionView = UICollectionView(
@@ -18,6 +30,8 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
   )
   
   private lazy var dataSource = makeDataSource(collectionView)
+  
+  let deleteRelay = PublishRelay<String>()
   
   init(reactor: MyRecordsReactor) {
     super.init(nibName: nil, bundle: nil)
@@ -30,13 +44,8 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
   }
   
   override func setupUI() {
-    title = "모의 면접 기록"
-    navigationItem.rightBarButtonItem = UIBarButtonItem(
-      title: "초기화",
-      style: .plain,
-      target: nil,
-      action: nil
-    )
+    navigationItem.titleView = TitleLabel
+    navigationItem.rightBarButtonItem = UIBarButtonItem(customView: clearAllButton)
     
     view.addSubview(collectionView)
     collectionView.snp.makeConstraints {
@@ -64,7 +73,25 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
   func makeLayout() -> UICollectionViewLayout {
     var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
     configuration.showsSeparators = false
-    // TODO: 삭제기능 추가
+    
+    configuration.trailingSwipeActionsConfigurationProvider = { [weak self] indexPath in
+
+      guard let id = self?.dataSource.itemIdentifier(for: indexPath)?.id else {
+        return UISwipeActionsConfiguration(actions: [])
+      }
+      
+      let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { _,_,completion in
+        self?.deleteRelay.accept(id)
+        completion(true)
+      }
+      
+      deleteAction.image = UIImage(systemName: "trash")?.withTintColor(.systemRed, renderingMode: .alwaysOriginal) // SF Symbol 아이콘 추가, 색 설정
+      deleteAction.backgroundColor = .systemBackground // 배경색 변경
+
+      let config = UISwipeActionsConfiguration(actions: [deleteAction])
+      config.performsFirstActionWithFullSwipe = false // 스와이프만으로 삭제 방지
+      return config
+    }
     
     return UICollectionViewCompositionalLayout { _, environment in
       NSCollectionLayoutSection.list(
@@ -79,7 +106,7 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
   
   override func bind(reactor: MyRecordsReactor) {
     
-    rx.viewDidAppear.map { _ in .sortByDate }
+    rx.viewWillAppear.map { _ in .sortByDate }
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
     
@@ -111,6 +138,25 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
       }
       .disposed(by: disposeBag)
     
+    deleteRelay.map { .deleteGroup($0) }
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
+    
+    clearAllButton.rx.tap
+      .withUnretained(self)
+      .flatMap { `self`, _ in
+        UIAlertController.rx.alert(
+          on: self,
+          title: "모든 기록 삭제",
+          message: "모든 모의 면접 기록을 삭제하시겠습니까?",
+          actions: [
+            .cancel("취소"),
+            .destructive("삭제", payload: .deleteAllGroups),
+          ])
+      }
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
+    
     reactor.state
       .map(\.cells) // [RecordGroupCellVM]
       .distinctUntilChanged()
@@ -122,7 +168,13 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
         self.dataSource.apply(snapshot, animatingDifferences: true)
       }
       .disposed(by: disposeBag)
-
+    
+    // 전체 기록이 0건이면 전체 삭제버튼 hidden 처리
+    reactor.state
+      .map { $0.cells.isEmpty }
+      .distinctUntilChanged()
+      .bind(to: clearAllButton.rx.isHidden)
+      .disposed(by: disposeBag)
   }
   
 }

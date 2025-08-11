@@ -14,14 +14,14 @@ MyRecordsReactor.State
     case sortByDate
     case selectGroup(String)
     case deleteGroup(String)
-    case clearAll
+    case deleteAllGroups
   }
   
   // 상태변경 이벤트 정의 (상태를 어떻게 바꿀 것인가)
   enum Mutation {
     case setGroups([MockInterviewGroup])
     case deleteOne(String)
-    case clearAll
+    case deleteAll
     case selectedGroup(MockInterviewGroup?)
   }
   
@@ -32,7 +32,7 @@ MyRecordsReactor.State
     var selectedGroup: MockInterviewGroup? = nil
   }
   
-  let recordDataService: FetchRecordDataServiceProtocol
+  let recordDataService: RecordDataServiceProtocol
   
   private let dateFmt: DateFormatter = {
     let format = DateFormatter()
@@ -42,7 +42,7 @@ MyRecordsReactor.State
   }()
   
   // 생성자에서 초기 상태 설정
-  init(dataService: FetchRecordDataServiceProtocol) {
+  init(dataService: RecordDataServiceProtocol) {
     self.recordDataService = dataService
     super.init(initialState: State())
   }
@@ -53,7 +53,6 @@ MyRecordsReactor.State
     switch action {
     case .sortByDate:
       let groups = recordDataService.fetchinterViewGroups()
-        .sorted { $0.date > $1.date } // 최신 날짜가 위로
       return .just(.setGroups(groups))
       
     case let .selectGroup(id):
@@ -61,10 +60,20 @@ MyRecordsReactor.State
       return .just(.selectedGroup(group))
       
     case let .deleteGroup(id):
-      return .just(.deleteOne(id))
+      do {
+        try recordDataService.deleteGroup(id: id)
+        return .just(.deleteOne(id))
+      } catch {
+        return .empty()
+      }
       
-    case .clearAll:
-      return .just(.clearAll)
+    case .deleteAllGroups:
+      do {
+        try recordDataService.deleteAll()
+        return .just(.deleteAll)
+      } catch {
+        return .empty()
+      }
     }
   }
   
@@ -89,7 +98,7 @@ MyRecordsReactor.State
       newState.recordGroups.removeAll { $0.id == id }
       newState.cells.removeAll { $0.id == id }
       
-    case .clearAll:
+    case .deleteAll:
       newState.recordGroups.removeAll()
       newState.cells.removeAll()
       
