@@ -98,7 +98,6 @@ class SelectionInterviewViewController: BaseViewController<SelectionInterviewRea
       .withUnretained(self)
       .bind { owner, _ in
         let container = DIContainer.shared
-        container.register(InterviewRoomViewController(reactor: InterviewRoomReactor()))
         let InterviewRoomVC: InterviewRoomViewController = container.resolve()
         owner.navigationController?.pushViewController(InterviewRoomVC, animated: true)
       }
