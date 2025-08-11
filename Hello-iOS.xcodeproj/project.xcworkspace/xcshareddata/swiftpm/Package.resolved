@@ -1,5 +1,5 @@
 {
-  "originHash" : "270b70679b31bbef5cee1d3efad40cdde5451bc05a8658419b9210e947c8cfb3",
+  "originHash" : "5e9b4b481351f91404566fb8e4e6f7525a221ece4480214108c4b2f6e6851ed7",
   "pins" : [
     {
       "identity" : "fscalendar",
@@ -44,6 +44,15 @@
       "state" : {
         "revision" : "9815e6c29d43cb5314add5dff8705c5476ab556c",
         "version" : "10.53.0"
+      }
+    },
+    {
+      "identity" : "rxrealm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/RxSwiftCommunity/RxRealm",
+      "state" : {
+        "revision" : "607bbee57d664dfa762c87e4917c7d98cdb05e2f",
+        "version" : "5.0.7"
       }
     },
     {
