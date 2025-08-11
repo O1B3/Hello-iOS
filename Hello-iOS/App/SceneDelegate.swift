@@ -64,7 +64,6 @@ extension SceneDelegate {
     container.register(SelectionInterviewViewController(reactor: SelectionInterviewReactor()))
     container.register(InterviewViewController(reactor: InterviewReactor()))
 
-    container.register(WordBookViewController(reactor: WordBookReactor()))
     container
       .register(
         MyPageInfoViewController(reactor: MyPageInfoReactor(dataService: StubUserDataService()))
