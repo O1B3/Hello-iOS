@@ -11,7 +11,7 @@ import SnapKit
 import Then
 
 final class WordBookView: UIView {
-  private lazy var dataSource = makeCollectionViewDataSource(self.collectionView)
+  lazy var dataSource = makeCollectionViewDataSource(self.collectionView)
 
   lazy var collectionView = UICollectionView(
     frame: .zero,
@@ -57,8 +57,8 @@ final class WordBookView: UIView {
     }
   }
 
-  func dataApply(data: [MockWordBook]) {
-    var snapshot = NSDiffableDataSourceSnapshot<Int, MockWordBook>()
+  func dataApply(data: [DomainCategories]) {
+    var snapshot = NSDiffableDataSourceSnapshot<Int, DomainCategories>()
 
     snapshot.appendSections([0])
     snapshot.appendItems(data, toSection: 0)
@@ -67,10 +67,10 @@ final class WordBookView: UIView {
   }
 
   private func makeCollectionViewDataSource(
-    _ collectionView: UICollectionView) -> UICollectionViewDiffableDataSource<Int, MockWordBook> {
+    _ collectionView: UICollectionView) -> UICollectionViewDiffableDataSource<Int, DomainCategories> {
 
       // 셀 설정
-      let cellRegistration = UICollectionView.CellRegistration<WordBookCell, MockWordBook> { cell, _, item in
+      let cellRegistration = UICollectionView.CellRegistration<WordBookCell, DomainCategories> { cell, _, item in
         cell.configure(title: item.category,
                        memorized: item.concepts
           .map { $0.isMemory }
@@ -79,7 +79,7 @@ final class WordBookView: UIView {
       }
 
       // 아이템별 데이터 소스 등록
-      let dataSource = UICollectionViewDiffableDataSource<Int, MockWordBook>(
+      let dataSource = UICollectionViewDiffableDataSource<Int, DomainCategories>(
         collectionView: collectionView) { collectionView, indexPath, item in
           return collectionView
             .dequeueConfiguredReusableCell(
@@ -87,7 +87,6 @@ final class WordBookView: UIView {
               for: indexPath,
               item: item
             )
-
         }
 
       return dataSource

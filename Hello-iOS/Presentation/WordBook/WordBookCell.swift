@@ -76,7 +76,12 @@ class WordBookCell: UICollectionViewCell {
 
   func configure(title: String, memorized: Int, total: Int) {
     titleLabel.text = title
-    progressLabel.text = "\(memorized)/\(total) [\(Int(Float(memorized) / Float(total) * 100))%]"
-    progressView.progress = Float(memorized) / Float(total)
+    if total == 0 {
+      progressLabel.text = "0/0 [0%]"
+      progressView.progress = 0
+    } else {
+      progressLabel.text = "\(memorized)/\(total) [\(Int(Float(memorized) / Float(total) * 100))%]"
+      progressView.progress = Float(memorized) / Float(total)
+    }
   }
 }

@@ -20,6 +20,7 @@
 		E7E0608F2E42E7240088BB28 /* ReactorKit in Frameworks */ = {isa = PBXBuildFile; productRef = E7E0608E2E42E7240088BB28 /* ReactorKit */; };
 		E7E060922E42E74C0088BB28 /* LookinServer in Frameworks */ = {isa = PBXBuildFile; productRef = E7E060912E42E74C0088BB28 /* LookinServer */; };
 		E9145A892E45F863007C2167 /* Shuffle in Frameworks */ = {isa = PBXBuildFile; productRef = E9145A882E45F863007C2167 /* Shuffle */; };
+		E96A0CEF2E49D09200A65DEE /* RxRealm in Frameworks */ = {isa = PBXBuildFile; productRef = E96A0CEE2E49D09200A65DEE /* RxRealm */; };
 		FEAC15FA2E45EDFB00209390 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = FEAC15F92E45EDFB00209390 /* RealmSwift */; };
 		FEDC26182E459C0200422130 /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = FEDC26172E459C0200422130 /* FSCalendar */; };
 /* End PBXBuildFile section */
@@ -100,6 +101,7 @@
 				E7E060872E42E5A70088BB28 /* Storage in Frameworks */,
 				E7E0608C2E42E6D90088BB28 /* RealmSwift in Frameworks */,
 				E7E0607D2E42E44E0088BB28 /* Then in Frameworks */,
+				E96A0CEF2E49D09200A65DEE /* RxRealm in Frameworks */,
 				E7E060922E42E74C0088BB28 /* LookinServer in Frameworks */,
 				E7E060892E42E5A70088BB28 /* Supabase in Frameworks */,
 				E7E060852E42E5A70088BB28 /* Realtime in Frameworks */,
@@ -181,6 +183,7 @@
 				E7E060912E42E74C0088BB28 /* LookinServer */,
 				FEDC26172E459C0200422130 /* FSCalendar */,
 				E9145A882E45F863007C2167 /* Shuffle */,
+				E96A0CEE2E49D09200A65DEE /* RxRealm */,
 			);
 			productName = "Hello-iOS";
 			productReference = E7E060422E42E3C90088BB28 /* Hello-iOS.app */;
@@ -249,6 +252,7 @@
 				E7E060902E42E74C0088BB28 /* XCRemoteSwiftPackageReference "LookinServer" */,
 				FEDC26162E459C0200422130 /* XCRemoteSwiftPackageReference "FSCalendar" */,
 				E9145A872E45F863007C2167 /* XCRemoteSwiftPackageReference "Shuffle" */,
+				E96A0CED2E49D09200A65DEE /* XCRemoteSwiftPackageReference "RxRealm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E7E060432E42E3C90088BB28 /* Products */;
@@ -602,8 +606,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-swift.git";
 			requirement = {
-				kind = exactVersion;
-				version = 10.53.0;
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.53.0;
 			};
 		};
 		E7E0608D2E42E7240088BB28 /* XCRemoteSwiftPackageReference "ReactorKit" */ = {
@@ -628,6 +632,14 @@
 			requirement = {
 				branch = master;
 				kind = branch;
+			};
+		};
+		E96A0CED2E49D09200A65DEE /* XCRemoteSwiftPackageReference "RxRealm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RxSwiftCommunity/RxRealm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.7;
 			};
 		};
 		FEDC26162E459C0200422130 /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
@@ -700,6 +712,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E9145A872E45F863007C2167 /* XCRemoteSwiftPackageReference "Shuffle" */;
 			productName = Shuffle;
+		};
+		E96A0CEE2E49D09200A65DEE /* RxRealm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E96A0CED2E49D09200A65DEE /* XCRemoteSwiftPackageReference "RxRealm" */;
+			productName = RxRealm;
 		};
 		FEAC15F92E45EDFB00209390 /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
