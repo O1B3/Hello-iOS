@@ -41,6 +41,7 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    navigationItem.title = "모의 면접 시작하기"
     setupUI()
     setConstraints()
   }
@@ -64,7 +65,8 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
   //  레이아웃 설정
   private func setConstraints() {
     buttonStackView.snp.makeConstraints {
-      $0.directionalEdges.equalTo(view.safeAreaLayoutGuide).inset(16)
+      $0.top.bottom.equalTo(view.safeAreaLayoutGuide).inset(100)
+      $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(16)
     }
   }
 

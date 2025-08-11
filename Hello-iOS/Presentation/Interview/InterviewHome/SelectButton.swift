@@ -42,7 +42,6 @@ class SelectButton: UIButton {
 
   private let titleLabelView = UILabel().then {
     $0.font = .systemFont(ofSize: 30, weight: .bold)
-
     $0.textColor = .white
     $0.numberOfLines = 2
   }
@@ -50,6 +49,7 @@ class SelectButton: UIButton {
   private let subtitleLabelView = UILabel().then {
     $0.font = .systemFont(ofSize: 20, weight: .bold)
     $0.textColor = UIColor.white.withAlphaComponent(0.9)
+    $0.numberOfLines = 2
   }
 
   override init(frame: CGRect) {

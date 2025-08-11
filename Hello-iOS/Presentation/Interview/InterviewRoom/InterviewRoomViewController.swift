@@ -86,6 +86,7 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    navigationItem.title = "모의 면접"
     setupUI()
     setConstraints()
   }
