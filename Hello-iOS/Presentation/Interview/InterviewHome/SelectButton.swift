@@ -42,12 +42,13 @@ class SelectButton: UIButton {
 
   private let titleLabelView = UILabel().then {
     $0.font = .systemFont(ofSize: 30, weight: .bold)
+
     $0.textColor = .white
     $0.numberOfLines = 2
   }
 
   private let subtitleLabelView = UILabel().then {
-    $0.font = .systemFont(ofSize: 20, weight: .regular)
+    $0.font = .systemFont(ofSize: 20, weight: .bold)
     $0.textColor = UIColor.white.withAlphaComponent(0.9)
   }
 
@@ -100,8 +101,13 @@ class SelectButton: UIButton {
   }
 
   func configure(title: String, subtitle: String, iconName: String, backgroundColor: UIColor) {
-    titleLabelView.text = title
-    subtitleLabelView.text = subtitle
+    let attributes: [NSAttributedString.Key: Any] = [
+        .strokeColor: UIColor.black,       // 윤곽선 색
+        .foregroundColor: UIColor.white,   // 안쪽 글자 색
+        .strokeWidth: -1.0                  // 윤곽선 두께 (음수로 해야 채워짐)
+    ]
+    titleLabelView.attributedText = NSAttributedString(string: title, attributes: attributes)
+    subtitleLabelView.attributedText = NSAttributedString(string: subtitle, attributes: attributes)
     iconImageView.image = UIImage(systemName: iconName)
     self.backgroundColor = backgroundColor
   }
