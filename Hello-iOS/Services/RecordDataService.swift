@@ -83,9 +83,9 @@ final class StubRecordDataService: RecordDataServiceProtocol {
         let recordD = MockInterviewRecord(
           id: 0,
           groupId: "group2",
-          question: "Question 0",
-          modelAnswer: "Answer 0",
-          myAnswer: "My Answer",
+          question: "Question 0 : ASDFASDGKMKQMQPKMGHQPKRGMIQRPGIMQPIGMQPIGMRQPIGMQPIRGMQRGPIMQRGPI",
+          modelAnswer: "Answer 0 : ASJGNAUJOGNQEOGUJNRQAEOGUNQAOGUJNAQGOUJNAOGUNAOGUNAORGNAOWGNAORGON",
+          myAnswer: "My Answer : %#QUYHOUHYOUHGUGOQW%#ITJ)IJOGIRTJE*GIJEA(*HG)#(QGOI#RGJAOIGREAOIGAOGIHAOIGUHOA$GH$AU",
           isSatisfied: true
         )
       

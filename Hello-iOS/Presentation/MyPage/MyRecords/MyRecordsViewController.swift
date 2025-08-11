@@ -15,9 +15,7 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
     $0.configuration?.title = "전체 삭제"
     $0.configuration?.baseForegroundColor = .systemRed
   }
-   
-  private enum Section { case main }
-  
+    
   lazy var collectionView = UICollectionView(
     frame: .zero,
     collectionViewLayout: makeLayout()
@@ -49,14 +47,14 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
   }
   
   private func makeDataSource(_ collectionView: UICollectionView) ->
-  UICollectionViewDiffableDataSource<Section, RecordGroupCellVM> {
+  UICollectionViewDiffableDataSource<Int, RecordGroupCellVM> {
     // 셀 정의
     let recordCell = UICollectionView.CellRegistration<RecordGroupCell, RecordGroupCellVM> { cell, _, item in
       cell.configure(id: item.id, dateText: item.dateText, subtitle: item.subtitle)
     }
     
     //데이터 소스 정의
-    let dataSource = UICollectionViewDiffableDataSource<Section, RecordGroupCellVM>(
+    let dataSource = UICollectionViewDiffableDataSource<Int, RecordGroupCellVM>(
       collectionView: collectionView
     ) { collectionView, indexPath, item in
       collectionView.dequeueConfiguredReusableCell(using: recordCell, for: indexPath, item: item)
@@ -92,7 +90,7 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
         using: configuration,
         layoutEnvironment: environment
       ).then { section in
-        section.contentInsets = .init(top: 10, leading: 20, bottom: 10, trailing: 20)
+        section.contentInsets = .init(top: 20, leading: 20, bottom: 20, trailing: 20)
         section.interGroupSpacing = 20
       }
     }
@@ -117,8 +115,9 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
       .disposed(by: disposeBag)
     
     selectedGroup
-      .bind { [weak self] group in
-        let reactor = RecordDetailReactor()
+      .bind { [weak self] _ in
+        let group = reactor.currentState.selectedGroup?.records
+        let reactor = RecordDetailReactor(items: group ?? [])
         let detailVC = RecordDetailViewController(reactor: reactor)
         detailVC.modalPresentationStyle = .pageSheet
         detailVC.modalTransitionStyle = .coverVertical
@@ -156,9 +155,9 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
       .distinctUntilChanged()
       .bind { [weak self] cells in
         guard let self else { return }
-        var snapshot = NSDiffableDataSourceSnapshot<Section, RecordGroupCellVM>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(cells, toSection: .main)
+        var snapshot = NSDiffableDataSourceSnapshot<Int, RecordGroupCellVM>()
+        snapshot.appendSections([0])
+        snapshot.appendItems(cells, toSection: 0)
         self.dataSource.apply(snapshot, animatingDifferences: true)
       }
       .disposed(by: disposeBag)

@@ -56,14 +56,17 @@ extension SceneDelegate {
     let container = DIContainer.shared
     container.register(InterviewViewController(reactor: InterviewReactor()))
     container.register(WordBookViewController())
-    
+#if DEBUG
     container
       .register(
         MyPageInfoViewController(reactor: MyPageInfoReactor(dataService: StubUserDataService()))
       )
-#if DEBUG
     container.register(StubRecordDataService() as RecordDataServiceProtocol)
 #else
+    container
+      .register(
+        MyPageInfoViewController(reactor: MyPageInfoReactor(dataService: FetchUserDataService()))
+      )
     container.register(RealmRecordDataService() as RecordDataServiceProtocol)
 #endif
     
