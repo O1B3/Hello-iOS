@@ -16,7 +16,9 @@ class SelectionInterviewViewController: BaseViewController<SelectionInterviewRea
     $0.collectionView.allowsMultipleSelection = true
   }
 
-  private let doneButton = UIBarButtonItem(title: "선택 완료", style: .done, target: nil, action: nil)
+  private let doneButton = UIBarButtonItem(title: "선택 완료", style: .done, target: nil, action: nil).then {
+    $0.isEnabled = true // 초기는 비활성화(현재 임시로 활성화)
+  }
 
   override func loadView() {
     self.view = wordBookView
@@ -34,7 +36,6 @@ class SelectionInterviewViewController: BaseViewController<SelectionInterviewRea
   override func viewDidLoad() {
     navigationItem.title = "단어장 선택"
     navigationItem.rightBarButtonItem = doneButton
-//    doneButton.isEnabled = false // 초기는 비활성화
 
     let mockConcepts = MockConcept(
       id: 1,
