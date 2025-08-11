@@ -1,21 +1,31 @@
-// RealmService.swift
+
 import Foundation
 import RealmSwift
+
+enum RealmServiceError: Error {
+  case objectNotFound
+}
 
 protocol RealmServiceType {
   // 트랜잭션
   func write(_ block: (Realm) throws -> Void) throws
   func writeAsync(_ block: @escaping (Realm) throws -> Void)
 
-  // Upsert
-  func upsert<T: Object>(_ object: T) throws
-  func upsert<T: Object>(_ objects: [T]) throws
+  // Create
+  func insert<T: Object>(_ object: T) throws
+  func insert<T: Object>(_ objects: [T]) throws
 
   // Read
   func fetch<T: Object>(_ type: T.Type,
                         predicate: NSPredicate?,
                         sorted: [RealmSwift.SortDescriptor]) throws -> Results<T>
   func find<T: Object>(_ type: T.Type, forPrimaryKey key: Any) throws -> T?
+
+  // Update
+  /// PK가 있는 타입을 PK로 찾아 업데이트
+  func update<T: Object>(_ type: T.Type, forPrimaryKey key: Any, _ apply: (T) -> Void) throws
+  /// PK가 없거나 일괄 수정이 필요할 때 predicate로 찾아 업데이트
+  func updateAll<T: Object>(_ type: T.Type, predicate: NSPredicate, _ apply: (T) -> Void) throws
 
   // Delete
   func delete<T: Object>(_ object: T) throws
@@ -31,14 +41,9 @@ final class RealmService: RealmServiceType {
   }
 
   // MARK: - Write
-
   func write(_ block: (Realm) throws -> Void) throws {
     let realm = try Realm(configuration: config)
-    do {
-      try realm.write { try block(realm) }
-    } catch {
-      throw error
-    }
+    try realm.write { try block(realm) }
   }
 
   func writeAsync(_ block: @escaping (Realm) throws -> Void) {
@@ -48,7 +53,6 @@ final class RealmService: RealmServiceType {
           let realm = try Realm(configuration: self.config)
           try realm.write { try block(realm) }
         } catch {
-          // 필요하면 로깅/콜백
           #if DEBUG
           print("Realm writeAsync error:", error)
           #endif
@@ -57,18 +61,16 @@ final class RealmService: RealmServiceType {
     }
   }
 
-  // MARK: - Upsert
-
-  func upsert<T: Object>(_ object: T) throws {
-    try write { $0.add(object, update: .modified) }
+  // MARK: - Create
+  func insert<T: Object>(_ object: T) throws {
+    try write { $0.add(object, update: .error) } // 중복 PK 존재 시 throw
   }
 
-  func upsert<T: Object>(_ objects: [T]) throws {
-    try write { $0.add(objects, update: .modified) }
+  func insert<T: Object>(_ objects: [T]) throws {
+    try write { $0.add(objects, update: .error) } // 중복 PK 존재 시 throw
   }
 
   // MARK: - Read
-
   func fetch<T: Object>(_ type: T.Type,
                         predicate: NSPredicate? = nil,
                         sorted: [RealmSwift.SortDescriptor] = []) throws -> Results<T> {
@@ -84,8 +86,23 @@ final class RealmService: RealmServiceType {
     return realm.object(ofType: type, forPrimaryKey: key)
   }
 
-  // MARK: - Delete
+  // MARK: - Update
+  func update<T: Object>(_ type: T.Type, forPrimaryKey key: Any, _ apply: (T) -> Void) throws {
+    let realm = try Realm(configuration: config)
+    guard let obj = realm.object(ofType: type, forPrimaryKey: key) else {
+      throw RealmServiceError.objectNotFound
+    }
+    try realm.write { apply(obj) }
+  }
 
+  func updateAll<T: Object>(_ type: T.Type, predicate: NSPredicate, _ apply: (T) -> Void) throws {
+    let realm = try Realm(configuration: config)
+    let targets = realm.objects(type).filter(predicate)
+    guard !targets.isEmpty else { throw RealmServiceError.objectNotFound }
+    try realm.write { targets.forEach(apply) }
+  }
+
+  // MARK: - Delete
   func delete<T: Object>(_ object: T) throws {
     try write { $0.delete(object) }
   }
