@@ -2,8 +2,11 @@
 import Foundation
 import RealmSwift
 
-enum RealmServiceError: Error {
+// 테스트/호출부에서 분기하기 쉽도록 명시적 에러 타입 추가
+enum RealmServiceError: Error, Equatable {
   case objectNotFound
+  case duplicatePrimaryKey
+  case missingPrimaryKeyValue
 }
 
 protocol RealmServiceType {
@@ -61,13 +64,44 @@ final class RealmService: RealmServiceType {
     }
   }
   
-  // MARK: - Create
+  // MARK: - Create (사전 중복 검사로 Obj-C 예외 방지)
   func insert<T: Object>(_ object: T) throws {
-    try write { $0.add(object, update: .error) } // 중복 PK 존재 시 throw
+    let realm = try Realm(configuration: config)
+    
+    if let pkName = type(of: object).primaryKey() {
+      guard let key = object.value(forKey: pkName) else {
+        throw RealmServiceError.missingPrimaryKeyValue
+      }
+      if realm.object(ofType: T.self, forPrimaryKey: key) != nil {
+        throw RealmServiceError.duplicatePrimaryKey
+      }
+    }
+    try write { $0.add(object) } // 업서트(.modified/.error) 사용 금지
   }
   
   func insert<T: Object>(_ objects: [T]) throws {
-    try write { $0.add(objects, update: .error) } // 중복 PK 존재 시 throw
+    let realm = try Realm(configuration: config)
+    
+    if let pkName = T.primaryKey() {
+      // 1) 동일 배치 내 중복 PK 검사
+      var seen = Set<AnyHashable>()
+      for o in objects {
+        guard let key = o.value(forKey: pkName) as? AnyHashable else {
+          throw RealmServiceError.missingPrimaryKeyValue
+        }
+        if !seen.insert(key).inserted {
+          throw RealmServiceError.duplicatePrimaryKey
+        }
+      }
+      // 2) DB 내 기존 중복 PK 검사
+      for o in objects {
+        let key = o.value(forKey: pkName)!
+        if realm.object(ofType: T.self, forPrimaryKey: key) != nil {
+          throw RealmServiceError.duplicatePrimaryKey
+        }
+      }
+    }
+    try write { $0.add(objects) }
   }
   
   // MARK: - Read
@@ -115,3 +149,4 @@ final class RealmService: RealmServiceType {
     }
   }
 }
+
