@@ -10,11 +10,7 @@ protocol RecordDataServiceProtocol {
 }
 
 // 실제 Realm에서 데이터 가져오는 코드
-struct RealmRecordDataService: RecordDataServiceProtocol {
-//  let realmService = RealmService()
-//  DIContainer.shared.register { realmService as RealmServiceType }
-//  let realm: RealmServiceType = DIContainer.shared.resolve()
-  
+struct RealmRecordDataService: RecordDataServiceProtocol { 
   private let realm: Realm
   
   init(realm: Realm = try! Realm()) {
