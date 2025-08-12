@@ -18,6 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     window = UIWindow(windowScene: windowScene)
     window?.rootViewController = makeTabBarController()
     window?.makeKeyAndVisible()
+    // TODO: 충돌 해결
   }
   
   func sceneDidDisconnect(_ scene: UIScene) {
