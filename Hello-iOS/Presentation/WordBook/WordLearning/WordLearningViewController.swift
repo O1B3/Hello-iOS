@@ -47,8 +47,33 @@ class WordLearningViewController: BaseViewController<WordLearningReactor> {
   }
 
   override func bind(reactor: WordLearningReactor) {
-    wordLearningView.addContentView.addButton.rx.tap.subscribe(onNext: { [weak self] in
+    wordLearningView.addContentView.addButton.rx
+      .tap
+      .subscribe(onNext: { [weak self] in
       self?.didTapAddContentButton()
+    }).disposed(by: disposeBag)
+
+    wordLearningView.reulstView.backButton.rx
+      .tap
+      .subscribe(onNext: { [weak self] in
+        self?.navigationController?.popViewController(animated: true)
+    }).disposed(by: disposeBag)
+
+    wordLearningView.reulstView.retryButton.rx
+      .tap
+      .subscribe(onNext: { [weak self] in
+        self?.wordLearningView.reulstView.isHidden = true
+        for _ in 0..<reactor.currentState.concepts.count {
+          self?.wordLearningView.cardStack.undoLastSwipe(animated: false)
+        }
+    }).disposed(by: disposeBag)
+
+    reactor.state.map { $0.concepts }.subscribe(onNext: { [weak self] concepts in
+      self?.wordLearningView
+        .reulstView
+        .configure(correct: concepts.filter { $0.isMemory }.count,
+                   wrong: concepts.filter { $0.isMemory == false }.count
+        )
     }).disposed(by: disposeBag)
   }
 }
@@ -82,6 +107,7 @@ extension WordLearningViewController: SwipeCardStackDataSource, SwipeCardStackDe
 
   func didSwipeAllCards(_ cardStack: SwipeCardStack) {
     // TODO: 결과화면 isHidden false
+    wordLearningView.reulstView.isHidden = false
   }
 }
 

@@ -18,8 +18,6 @@ WordLearningReactor.Mutation,
 WordLearningReactor.State
 > {
 
-  typealias Mutation = NoMutation
-
   let realmService: RealmServiceType
 
   enum Action {
@@ -27,8 +25,12 @@ WordLearningReactor.State
     case addContent(String, String, String, String)
   }
 
+  enum Mutation {
+    case updateConcepts([DomainConcept])
+  }
+
   struct State {
-    let concepts: [DomainConcept]
+    var concepts: [DomainConcept]
   }
 
   init(realmService: RealmServiceType, concepts: [DomainConcept]) {
@@ -45,10 +47,19 @@ WordLearningReactor.State
           forPrimaryKey: currentState.concepts[index].id) {
             $0.isMemory = isMemorize
           }
+
+        var updatedConcepts = currentState.concepts
+        if index < updatedConcepts.count {
+            updatedConcepts[index].isMemory = isMemorize
+        } else {
+            // Handle the case where index is out of bounds, though it should ideally not happen
+            print("Error: Index out of bounds in WordLearningReactor.mutate for memorize action")
+        }
+        return .just(.updateConcepts(updatedConcepts))
       } catch {
         print(error)
+        return .empty()
       }
-      return .empty()
     case .addContent(let concept, let explain, let question, let answer):
       do {
         let conceptNum = try realmService.fetch(
@@ -88,5 +99,14 @@ WordLearningReactor.State
       }
       return .empty()
     }
+  }
+
+  override func reduce(state: State, mutation: Mutation) -> State {
+    var newState = state
+    switch mutation {
+    case .updateConcepts(let concepts):
+      newState.concepts = concepts
+    }
+    return newState
   }
 }
