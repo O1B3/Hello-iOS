@@ -17,7 +17,7 @@ class SelectionInterviewViewController: BaseViewController<SelectionInterviewRea
   }
 
   private let doneButton = UIBarButtonItem(title: "선택 완료", style: .done, target: nil, action: nil).then {
-    $0.isEnabled = true // 초기는 비활성화(현재 임시로 활성화)
+    $0.isEnabled = false
   }
 
   override func loadView() {
@@ -77,12 +77,23 @@ class SelectionInterviewViewController: BaseViewController<SelectionInterviewRea
       .disposed(by: disposeBag)
 
     doneButton.rx.tap
+      .withLatestFrom(reactor.state.map(\.selectedIDs))
       .withUnretained(self)
-      .bind { owner, _ in
+      .bind { owner, selectedIDs in
         let container = DIContainer.shared
-        let InterviewRoomVC: InterviewRoomViewController = container.resolve()
+        let InterviewRoomVC = InterviewRoomViewController(
+          reactor: InterviewRoomReactor(realmService: container.resolve(), interviewMode: .myStudy(Array(selectedIDs)))
+        )
+        print(selectedIDs)
         owner.navigationController?.pushViewController(InterviewRoomVC, animated: true)
       }
+      .disposed(by: disposeBag)
+
+    // 1개이상 선택 됐을때만 완료 버튼 활성화
+    reactor.state
+      .map { !$0.selectedIDs.isEmpty }
+      .distinctUntilChanged()
+      .bind(to: doneButton.rx.isEnabled)
       .disposed(by: disposeBag)
   }
 }

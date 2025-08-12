@@ -59,7 +59,6 @@ extension SceneDelegate {
 
     // 면접 VC
     container.register(ResultInterviewViewController(reactor: ResultInterviewReactor()))
-    container.register(InterviewRoomViewController(reactor: InterviewRoomReactor()))
     container
       .register(
         SelectionInterviewViewController(reactor:

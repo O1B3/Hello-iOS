@@ -74,12 +74,12 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
     let container = DIContainer.shared
 
     myStudyInterviewButton.rx.tap
-      .map { InterviewReactor.Action.selectInterviewMode(.myStudy) }
+      .map { InterviewReactor.Action.selectInterviewMode(.myStudy([])) }
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
 
     reviewInterviewButton.rx.tap
-      .map { InterviewReactor.Action.selectInterviewMode(.review) }
+      .map { InterviewReactor.Action.selectInterviewMode(.review([])) }
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
 
@@ -90,26 +90,26 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
       .disposed(by: disposeBag)
 
     reactor.pulse(\.$selectedMode)
+      .compactMap { $0 }
       .withLatestFrom(reactor.state.map { $0.isReviewAvailable }) { ($0, $1) }
-      .bind(with: self) {
-        owner, tuple in
-        let (mode, isAvailable) = tuple
+      .bind { [weak self] mode, isAvailable in
+        guard let self else { return }
         switch mode {
         case .myStudy:
           let vc = SelectionInterviewViewController(
             reactor: SelectionInterviewReactor(realmService: container.resolve())
           )
-          owner.navigationController?.pushViewController(vc, animated: true)
+          navigationController?.pushViewController(vc, animated: true)
         case .review:
           // 데이터가 있다면 면접실로 이동하고 없으면 알림창 띄우기
           if isAvailable {
-            let vc: InterviewRoomViewController = container.resolve()
-            owner.navigationController?.pushViewController(vc, animated: true)
+            let interviewRoomVC = InterviewRoomViewController(
+              reactor: InterviewRoomReactor(realmService: RealmService(), interviewMode: mode)
+            )
+            navigationController?.pushViewController(interviewRoomVC, animated: true)
           } else {
-            owner.presentNoReviewAlert()
+            presentNoReviewAlert()
           }
-        case .none:
-          break
         }
       }
       .disposed(by: disposeBag)
