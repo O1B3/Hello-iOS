@@ -18,16 +18,21 @@ class ShadowView: UIView {
     setupShadow()
   }
 
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    layer.shadowPath = UIBezierPath(
+      roundedRect: bounds,
+      cornerRadius: layer.cornerRadius
+    ).cgPath
+  }
+
   private func setupShadow() {
+    layer.cornerRadius = 12                           // 모서리 둥글게
+    layer.masksToBounds = false                       // 그림자 안 잘리도록
 
-    backgroundColor = .clear
-
-    layer.cornerRadius = 12
-    layer.masksToBounds = false  // 그림자가 잘리지 않도록
-
-    layer.shadowColor = UIColor.black.cgColor         // 그림자색
+    layer.shadowColor = UIColor.black.cgColor         // 그림자 색
     layer.shadowOpacity = 0.2                         // 그림자 투명도
     layer.shadowOffset = CGSize(width: 0, height: 4)  // 그림자 위치
-    layer.shadowRadius = 6                            // 블러 정도
+    layer.shadowRadius = 4                            // 그림자 블러
   }
 }
