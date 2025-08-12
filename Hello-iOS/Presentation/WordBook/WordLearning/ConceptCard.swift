@@ -116,7 +116,7 @@ class ConceptCard: SwipeCard {
 
     scrollView.snp.makeConstraints {
       $0.top.equalTo(indexLabel.snp.bottom).offset(10)
-      $0.leading.bottom.trailing.equalToSuperview().inset(10)
+      $0.leading.bottom.trailing.equalToSuperview().inset(10).priority(999)
     }
 
     explainLabel.snp.makeConstraints {
@@ -126,8 +126,7 @@ class ConceptCard: SwipeCard {
     }
 
     conceptLabel.snp.makeConstraints {
-      $0.top.bottom.equalToSuperview()
-      $0.top.bottom.leading.trailing.equalToSuperview().inset(10)
+      $0.top.bottom.leading.trailing.equalToSuperview().inset(10).priority(999)
     }
 
     scrollView.contentLayoutGuide.snp.makeConstraints {

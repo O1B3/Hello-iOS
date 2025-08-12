@@ -18,7 +18,7 @@ class BaseViewController<R: Reactor>: UIViewController, View {
     // override에서 UI설정
   }
 
-  func bind(reactor _: R) {
+  func bind(reactor: R) {
     // 각 VC에서 상태 바인딩 시 override
   }
 }

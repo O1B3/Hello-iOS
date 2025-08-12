@@ -60,7 +60,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 extension SceneDelegate {
   func makeTabBarController() -> UITabBarController {
     let container = DIContainer.shared
-    container.register(WordLearningViewController())
 
     // 면접 VC
     container.register(ResultInterviewViewController(reactor: ResultInterviewReactor()))
@@ -117,8 +116,8 @@ extension SceneDelegate {
     
     /// 하단 탭바의 경계션 표현
     let appearance = UITabBarAppearance()
-    
     appearance.configureWithOpaqueBackground()
+    appearance.backgroundColor = .background
     appearance.shadowColor = .lightGray
     tabBarController.tabBar.standardAppearance = appearance
     tabBarController.tabBar.scrollEdgeAppearance = tabBarController.tabBar.standardAppearance
@@ -144,10 +143,10 @@ extension SceneDelegate {
     // WordLearning
     container.register(type: LearningRepositoryProtocol.self, LearningRepository())
     container.register(LearningService(learningRepository: container.resolve()))
-    container.register(WordLearningViewController())
 
     // WordBook
-    container.register(WordBookReactor(realmService: RealmService()))
+    container.register(type: RealmServiceType.self, RealmService())
+    container.register(WordBookReactor(realmService: container.resolve()))
     container.register(WordBookViewController(reactor: container.resolve()))
   }
 
