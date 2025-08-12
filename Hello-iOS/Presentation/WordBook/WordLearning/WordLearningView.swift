@@ -14,10 +14,13 @@ import Shuffle
 class WordLearningView: UIView {
 
   let cardStack = SwipeCardStack()
+  let addContentView = AddContentView().then {
+    $0.isHidden = true
+  }
 
   override init(frame: CGRect) {
     super.init(frame: frame)
-
+    self.backgroundColor = .background
     setupUI()
   }
 
@@ -27,11 +30,19 @@ class WordLearningView: UIView {
 
   private func setupUI() {
     addSubview(cardStack)
+    addSubview(addContentView)
 
     cardStack.snp.makeConstraints {
       $0.top.equalTo(self.safeAreaLayoutGuide).offset(45)
       $0.leading.trailing.equalTo(self.safeAreaLayoutGuide).inset(38)
       $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(98)
+    }
+
+    addContentView.snp.makeConstraints {
+      $0.top.equalTo(self.safeAreaLayoutGuide).offset(40)
+      $0.centerX.equalToSuperview()
+      $0.width.equalToSuperview().multipliedBy(0.8)
+      $0.height.equalTo(addContentView.snp.width).multipliedBy(1.5)
     }
   }
 

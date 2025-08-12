@@ -6,19 +6,31 @@
 //
 
 import UIKit
+
 import Shuffle
+import RxSwift
+import RxCocoa
+import SnapKit
 
 class WordLearningViewController: BaseViewController<WordLearningReactor> {
 
-  let wordLearningView = WordLearningView()
-  let conceptTexts = ["aaaaaaaaaaaaaa", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
-  let explainTexts = ["1ddddsdsdsdsdsdsdsdsdsdsdsdsdddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsddddsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdssdsdsdsdsdsdsds", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+  private let wordLearningView = WordLearningView()
+
+  init(reactor: WordLearningReactor) {
+    super.init(nibName: nil, bundle: nil)
+    self.reactor = reactor
+  }
+
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
 
   override func loadView() {
     view = wordLearningView
   }
 
   override func viewDidLoad() {
+    super.viewDidLoad()
     wordLearningView.cardStack.dataSource = self
     wordLearningView.cardStack.delegate = self
     self.title = "개념 공부"
@@ -26,21 +38,40 @@ class WordLearningViewController: BaseViewController<WordLearningReactor> {
   }
 
   private func setupNavigationBar() {
-    let plusButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: nil)
+    let plusButton = UIBarButtonItem(
+      barButtonSystemItem: .add,
+      target: self,
+      action: #selector(didTapAddButton)
+    )
     self.navigationItem.rightBarButtonItem = plusButton
+  }
+
+  override func bind(reactor: WordLearningReactor) {
+    wordLearningView.addContentView.addButton.rx.tap.subscribe(onNext: { [weak self] in
+      self?.didTapAddContentButton()
+    }).disposed(by: disposeBag)
   }
 }
 
 extension WordLearningViewController: SwipeCardStackDataSource, SwipeCardStackDelegate {
   func cardStack(_ cardStack: SwipeCardStack, cardForIndexAt index: Int) -> SwipeCard {
-    return wordLearningView.card(concept: conceptTexts[index],
-                                 explain: explainTexts[index],
-                                 total: conceptTexts.count,
+    let concepts = reactor?.currentState.concepts ?? []
+    return wordLearningView.card(concept: concepts[index].concept,
+                                 explain: concepts[index].explain,
+                                 total: concepts.count,
                                  index: index + 1)
   }
 
   func numberOfCards(in cardStack: SwipeCardStack) -> Int {
-    return conceptTexts.count
+    return  reactor?.currentState.concepts.count ?? 0
+  }
+
+  func cardStack(_ cardStack: SwipeCardStack, didSwipeCardAt index: Int, with direction: SwipeDirection) {
+    if direction == .right {
+      reactor?.action.onNext(.memorize(index, true))
+    } else {
+      reactor?.action.onNext(.memorize(index, false))
+    }
   }
 
   func cardStack(_ cardStack: SwipeCardStack, didSelectCardAt index: Int) {
@@ -48,9 +79,36 @@ extension WordLearningViewController: SwipeCardStackDataSource, SwipeCardStackDe
       card.toggleLabels()
     }
   }
+
+  func didSwipeAllCards(_ cardStack: SwipeCardStack) {
+    // TODO: 결과화면 isHidden false
+  }
 }
 
-@available(iOS 18.0, *)
-#Preview {
-  WordLearningViewController()
+extension WordLearningViewController {
+  @objc func didTapAddButton() {
+    wordLearningView.addContentView.isHidden = false
+  }
+
+  func didTapAddContentButton() {
+    let contentView = wordLearningView.addContentView
+    let concept = contentView.contentUI.getText()
+    let explain = contentView.explainUI.getText()
+    let question = contentView.questionUI.getText()
+    let answer = contentView.answerUI.getText()
+
+    contentView.contentUI.removeText()
+    contentView.explainUI.removeText()
+    contentView.questionUI.removeText()
+    contentView.answerUI.removeText()
+    wordLearningView.addContentView.isHidden = true
+    reactor?.action.onNext(
+      .addContent(concept,
+                  explain,
+                  question,
+                  answer)
+    )
+
+    contentView.closeTapped()
+  }
 }
