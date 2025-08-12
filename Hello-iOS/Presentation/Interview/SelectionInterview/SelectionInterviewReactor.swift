@@ -19,16 +19,20 @@ SelectionInterviewReactor.State
   // 사용자 액션 정의 (사용자의 의도)
   enum Action {
     case fetchWordBook
+    case selectCategory(Int)    // 카테고리 선택
+    case deselectCategory(Int)  // 카테고리 해제
   }
 
   // 상태변경 이벤트 정의 (상태를 어떻게 바꿀 것인가)
   enum Mutation {
     case setWordBooks([DomainCategories])
+    case setSelectedIDs(Set<Int>)
   }
 
   // View의 상태 정의 (현재 View의 상태값)
   struct State {
     var wordBooks: [DomainCategories] = []
+    var selectedIDs: Set<Int> = []
   }
 
   let realmService: RealmServiceType
@@ -43,7 +47,6 @@ SelectionInterviewReactor.State
   // 사용자 입력 → 상태 변화 신호로 변환
   override func mutate(action: Action) -> Observable<Mutation> {
     switch action {
-
     case .fetchWordBook:
       guard let results = try? realmService.fetch(
         RealmCategory.self,
@@ -52,12 +55,21 @@ SelectionInterviewReactor.State
       ) else {
         return .empty()
       }
-
       return Observable.collection(from: results)
         .map { newResults in
           let domainBooks = newResults.map { $0.toDomain() }
           return .setWordBooks(Array(domainBooks))
         }
+
+    case .selectCategory(let id):
+      var newSet = currentState.selectedIDs
+      newSet.insert(id)
+      return .just(.setSelectedIDs(newSet))
+
+    case .deselectCategory(let id):
+      var newSet = currentState.selectedIDs
+      newSet.remove(id)
+      return .just(.setSelectedIDs(newSet))
     }
   }
 
@@ -67,7 +79,10 @@ SelectionInterviewReactor.State
     var newState = state
     switch mutation {
     case .setWordBooks(let books):
-        newState.wordBooks = books
+      newState.wordBooks = books
+
+    case .setSelectedIDs(let ids):
+      newState.selectedIDs = ids
     }
     return newState
   }

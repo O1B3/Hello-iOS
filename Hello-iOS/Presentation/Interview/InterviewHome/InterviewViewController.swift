@@ -91,11 +91,14 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
 
     reactor.pulse(\.$selectedMode)
       .withLatestFrom(reactor.state.map { $0.isReviewAvailable }) { ($0, $1) }
-      .bind(with: self) { owner, tuple in
+      .bind(with: self) {
+        owner, tuple in
         let (mode, isAvailable) = tuple
         switch mode {
         case .myStudy:
-          let vc: SelectionInterviewViewController = container.resolve()
+          let vc = SelectionInterviewViewController(
+            reactor: SelectionInterviewReactor(realmService: container.resolve())
+          )
           owner.navigationController?.pushViewController(vc, animated: true)
         case .review:
           // 데이터가 있다면 면접실로 이동하고 없으면 알림창 띄우기

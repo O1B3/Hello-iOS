@@ -8,16 +8,12 @@
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-  
+
   var window: UIWindow?
-  
-  
+
+
   func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
     guard let windowScene = (scene as? UIWindowScene) else { return }
-
-    window = UIWindow(windowScene: windowScene)
-    window?.rootViewController = makeTabBarController()
-    window?.makeKeyAndVisible()
 
     registerObjects()
     window = UIWindow(windowScene: windowScene)
@@ -25,36 +21,36 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     window?.makeKeyAndVisible()
     updateRecentlyData()
   }
-  
+
   func sceneDidDisconnect(_ scene: UIScene) {
     // Called as the scene is being released by the system.
     // This occurs shortly after the scene enters the background, or when its session is discarded.
     // Release any resources associated with this scene that can be re-created the next time the scene connects.
     // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
   }
-  
+
   func sceneDidBecomeActive(_ scene: UIScene) {
     // Called when the scene has moved from an inactive state to an active state.
     // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
   }
-  
+
   func sceneWillResignActive(_ scene: UIScene) {
     // Called when the scene will move from an active state to an inactive state.
     // This may occur due to temporary interruptions (ex. an incoming phone call).
   }
-  
+
   func sceneWillEnterForeground(_ scene: UIScene) {
     // Called as the scene transitions from the background to the foreground.
     // Use this method to undo the changes made on entering the background.
   }
-  
+
   func sceneDidEnterBackground(_ scene: UIScene) {
     // Called as the scene transitions from the foreground to the background.
     // Use this method to save data, release shared resources, and store enough scene-specific state information
     // to restore the scene back to its current state.
   }
-  
-  
+
+
 }
 
 extension SceneDelegate {
@@ -66,13 +62,16 @@ extension SceneDelegate {
     container.register(InterviewRoomViewController(reactor: InterviewRoomReactor()))
     container
       .register(
-        SelectionInterviewViewController(reactor: SelectionInterviewReactor(realmService: RealmService()) )
+        SelectionInterviewViewController(reactor:
+                                          SelectionInterviewReactor(realmService: container.resolve())
+                                        )
       )
     container
       .register(
-        InterviewViewController(reactor: InterviewReactor(realmService: RealmService()))
+        InterviewViewController(reactor:
+                                  InterviewReactor(realmService: container.resolve())
+                               )
       )
-    container.register(WordBookReactor(realmService: RealmService()))
     container.register(WordBookViewController(reactor: container.resolve()))
 
 #if DEBUG
@@ -88,13 +87,13 @@ extension SceneDelegate {
       )
     container.register(RealmRecordDataService() as RecordDataServiceProtocol)
 #endif
-    
+
     let interviewVC: InterviewViewController = container.resolve()
     let myPageVC: MyPageInfoViewController = container.resolve()
-    
+
     let wordBookVC: WordBookViewController = container.resolve()
     let tabBarController = UITabBarController()
-    
+
     wordBookVC.tabBarItem = UITabBarItem(
       title: "단어장",
       image: UIImage(systemName: "book"),
@@ -106,18 +105,18 @@ extension SceneDelegate {
       image: UIImage(systemName: "magnifyingglass"),
       tag: 1
     )
-    
+
     myPageVC.tabBarItem = UITabBarItem(
       title: "마이페이지",
       image: UIImage(systemName: "person"),
       tag: 2
     )
-    
+
     tabBarController.viewControllers = [wordBookVC, interviewVC, myPageVC].map {
       UINavigationController(rootViewController: $0)
     }
     tabBarController.tabBar.tintColor = .main
-    
+
     /// 하단 탭바의 경계션 표현
     let appearance = UITabBarAppearance()
     appearance.configureWithOpaqueBackground()
@@ -125,15 +124,15 @@ extension SceneDelegate {
     appearance.shadowColor = .lightGray
     tabBarController.tabBar.standardAppearance = appearance
     tabBarController.tabBar.scrollEdgeAppearance = tabBarController.tabBar.standardAppearance
-    
+
     /// 상단 네비게이션의 경계션 표현
     let topAppearance = UINavigationBarAppearance()
-    
+
     topAppearance.configureWithOpaqueBackground()
     topAppearance.backgroundColor = .background
     topAppearance.titleTextAttributes = [.foregroundColor: UIColor.label]
     topAppearance.shadowColor = UIColor.lightGray
-    
+
     UINavigationBar.appearance().standardAppearance = topAppearance
     UINavigationBar.appearance().scrollEdgeAppearance = topAppearance
     UINavigationBar.appearance().tintColor = .main
