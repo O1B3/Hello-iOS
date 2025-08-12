@@ -1,5 +1,5 @@
 {
-  "originHash" : "d2c90c8f1d8c5882bda9b8811bc4e557c714c7a65b561a3b10a5bfc41ddcd3ae",
+  "originHash" : "7412d9d8eaba44e78ea6dfcfb15b46bfaea52f14d49c289ec6823d94da43585f",
   "pins" : [
     {
       "identity" : "fscalendar",
@@ -47,12 +47,30 @@
       }
     },
     {
+      "identity" : "rxrealm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/RxSwiftCommunity/RxRealm",
+      "state" : {
+        "revision" : "267cc8b587a5d5c74b57105050f9838cf20e2541",
+        "version" : "5.1.0"
+      }
+    },
+    {
       "identity" : "rxswift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ReactiveX/RxSwift",
       "state" : {
         "revision" : "5dd1907d64f0d36f158f61a466bab75067224893",
         "version" : "6.9.0"
+      }
+    },
+    {
+      "identity" : "shuffle",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mac-gallagher/Shuffle",
+      "state" : {
+        "branch" : "master",
+        "revision" : "df246b9cd6b8b5e021b23c80706b4a4571785c1b"
       }
     },
     {

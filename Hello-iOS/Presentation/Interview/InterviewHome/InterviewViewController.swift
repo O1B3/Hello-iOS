@@ -71,6 +71,8 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
   }
 
   override func bind(reactor: InterviewReactor) {
+    let container = DIContainer.shared
+
     myStudyInterviewButton.rx.tap
       .map { InterviewReactor.Action.selectInterviewMode(.myStudy) }
       .bind(to: reactor.action)
@@ -81,13 +83,38 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
 
+    // 화면 진입 시 데이터 유무 체크
+    self.rx.viewDidLoad
+      .map { InterviewReactor.Action.fetchInterviewRecord }
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
+
     reactor.pulse(\.$selectedMode)
-      .bind(with: self) { owner, mode in
-        let container = DIContainer.shared
-        let SelectionInterviewVC: SelectionInterviewViewController = container.resolve()
-        owner.navigationController?.pushViewController(SelectionInterviewVC, animated: true)
+      .withLatestFrom(reactor.state.map { $0.isReviewAvailable }) { ($0, $1) }
+      .bind(with: self) { owner, tuple in
+        let (mode, isAvailable) = tuple
+        switch mode {
+        case .myStudy:
+          let vc: SelectionInterviewViewController = container.resolve()
+          owner.navigationController?.pushViewController(vc, animated: true)
+        case .review:
+          // 데이터가 있다면 면접실로 이동하고 없으면 알림창 띄우기
+          if isAvailable {
+            let vc: InterviewRoomViewController = container.resolve()
+            owner.navigationController?.pushViewController(vc, animated: true)
+          } else {
+            owner.presentNoReviewAlert()
+          }
+        case .none:
+          break
+        }
       }
       .disposed(by: disposeBag)
   }
-}
 
+  private func presentNoReviewAlert() {
+    let alert = UIAlertController(title: "복습할 기록이 없어요", message: "먼저 모의 면접을 진행해 보세요!", preferredStyle: .alert)
+    alert.addAction(UIAlertAction(title: "확인", style: .default))
+    present(alert, animated: true)
+  }
+}
