@@ -176,7 +176,6 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
 
     // 데이터가 갱신되면 첫 질문을 보여주고 인덱스 초기화
     questions
-      .observe(on: MainScheduler.instance)
       .subscribe(onNext: { [weak self] qs in
         guard let self = self else { return }
         currentIndex.accept(0) // 첫 질문부터
@@ -189,7 +188,6 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
     // 음성 인식 결과 → 현재 인덱스의 답변 저장 + 텍스트 반영
     reactor.state
       .map { $0.recognizedText }
-      .observe(on: MainScheduler.instance)
       .subscribe(onNext: { [weak self] text in
         guard let self = self else { return }
         self.myAnswerTextView.text = text // 화면 표시
@@ -207,7 +205,6 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
       .withLatestFrom(Observable.combineLatest(questions, answers.asObservable())) { newIdx, pair in
         (newIdx, pair.0, pair.1) // (인덱스, 질문들, 답변들)
       }
-      .observe(on: MainScheduler.instance)
       .subscribe(onNext: { [weak self] idx, qs, ans in
         guard let self = self else { return }
         currentIndex.accept(idx)
@@ -225,7 +222,6 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
       .withLatestFrom(Observable.combineLatest(questions, answers.asObservable())) { newIdx, pair in
         (newIdx, pair.0, pair.1)
       }
-      .observe(on: MainScheduler.instance)
       .subscribe(onNext: { [weak self] idx, qs, ans in
         guard let self = self else { return }
         currentIndex.accept(idx)
@@ -267,7 +263,6 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
         reactor.state.map { $0.isRecording }.distinctUntilChanged(),
         allAnswered
       )
-      .observe(on: MainScheduler.instance)
       .subscribe(onNext: { [weak self] idx, count, recording, allOK in
         guard let self = self else { return }
         let isLast = (idx + 1 == count) && count > 0
@@ -283,7 +278,6 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
         currentIndex.asObservable(),
         reactor.state.map { $0.isRecording }
       ))
-      .observe(on: MainScheduler.instance)
       .subscribe(onNext: { [weak self] (arr: [String], count: Int, idx: Int, recording: Bool) in
         guard let self = self else { return }
         let trimmed = arr.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
