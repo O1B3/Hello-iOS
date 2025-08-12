@@ -36,7 +36,7 @@ class WordBookCell: UICollectionViewCell {
   override init(frame: CGRect) {
     super.init(frame: frame)
 
-    addSubview(verticalStackView)
+    contentView.addSubview(verticalStackView)
     verticalStackView.addArrangedSubview(titleLabel)
     verticalStackView.addArrangedSubview(progressLabel)
     verticalStackView.addArrangedSubview(progressView)
@@ -50,7 +50,7 @@ class WordBookCell: UICollectionViewCell {
     }
 
     titleLabel.snp.makeConstraints {
-      $0.height.equalTo(titleLabel.font.lineHeight)
+      $0.height.greaterThanOrEqualTo(titleLabel.font.lineHeight)
     }
 
     verticalStackView.snp.makeConstraints {
@@ -76,7 +76,12 @@ class WordBookCell: UICollectionViewCell {
 
   func configure(title: String, memorized: Int, total: Int) {
     titleLabel.text = title
-    progressLabel.text = "\(memorized)/\(total) [\(Int(Float(memorized) / Float(total) * 100))%]"
-    progressView.progress = Float(memorized) / Float(total)
+    if total == 0 {
+      progressLabel.text = "0/0 [0%]"
+      progressView.progress = 0
+    } else {
+      progressLabel.text = "\(memorized)/\(total) [\(Int(Float(memorized) / Float(total) * 100))%]"
+      progressView.progress = Float(memorized) / Float(total)
+    }
   }
 }
