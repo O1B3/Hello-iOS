@@ -14,20 +14,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   
   func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
     guard let windowScene = (scene as? UIWindowScene) else { return }
-<<<<<<< HEAD
-    
+
     window = UIWindow(windowScene: windowScene)
     window?.rootViewController = makeTabBarController()
     window?.makeKeyAndVisible()
-    // TODO: 충돌 해결
-=======
 
     registerObjects()
     window = UIWindow(windowScene: windowScene)
     window?.rootViewController = makeTabBarController()
     window?.makeKeyAndVisible()
     updateRecentlyData()
->>>>>>> develop-copy
   }
   
   func sceneDidDisconnect(_ scene: UIScene) {
@@ -71,6 +67,9 @@ extension SceneDelegate {
     container.register(InterviewRoomViewController(reactor: InterviewRoomReactor()))
     container.register(SelectionInterviewViewController(reactor: SelectionInterviewReactor()))
     container.register(InterviewViewController(reactor: InterviewReactor()))
+    container.register(WordBookReactor(realmService: RealmService()))
+    container.register(WordBookViewController(reactor: container.resolve()))
+
 #if DEBUG
     container
       .register(
@@ -87,6 +86,7 @@ extension SceneDelegate {
     
     let interviewVC: InterviewViewController = container.resolve()
     let myPageVC: MyPageInfoViewController = container.resolve()
+    
     let wordBookVC: WordBookViewController = container.resolve()
     let tabBarController = UITabBarController()
     
