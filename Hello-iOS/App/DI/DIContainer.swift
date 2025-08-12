@@ -9,25 +9,21 @@ import Foundation
 final class DIContainer {
   static let shared = DIContainer()
 
-  private var services: [String: () -> Any] = [:]
+  private var services: [String: Any] = [:]
 
-  // 타입명과 객체를 생성하는 클로저를 딕셔너리에 등록
-  func register<T>(_ service: @autoclosure @escaping () -> T) {
+  // 타입명과 객체를 딕셔너리에 등록
+  func register<T>(_ service: T) {
     let key = String(describing: T.self)
+
     services[key] = service
   }
 
-  func register<T>(type: T.Type, _ service: @autoclosure @escaping () -> Any) {
-    let key = String(describing: type)
-    services[key] = service
-  }
-
-  // 저장된 클로저를 실행하여 새로운 객체를 생성하고 반환
+  // 저장된 객체를 타입명으로 불러오기
   func resolve<T>() -> T {
     let key = String(describing: T.self)
 
-    guard let serviceFactory = services[key], let service = serviceFactory() as? T else {
-      fatalError("DIContainer error: \(key) is not registered")
+    guard let service = services[key] as? T else {
+      fatalError("DIContainer error")
     }
 
     return service

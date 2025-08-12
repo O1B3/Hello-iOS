@@ -6,14 +6,12 @@ final class RealmCategory: Object {
   @Persisted(primaryKey: true) var id: Int
   @Persisted var category: String
   @Persisted var concepts = List<RealmConcept>()
-  @Persisted var latestUpdate: Date
 
   // 도메인 -> Realm (FK 주입)
   convenience init(from domain: DomainCategories) {
     self.init()
     id = domain.id
     category = domain.category
-    latestUpdate = domain.latestUpdate
     let linked = domain.concepts.map { RealmConcept(from: $0) }
     concepts.append(objectsIn: linked)
   }
@@ -24,8 +22,7 @@ final class RealmCategory: Object {
     return DomainCategories(
       id: id,
       category: category,
-      concepts: filtered.map { $0.toDomain() },
-      latestUpdate: latestUpdate
+      concepts: filtered.map { $0.toDomain() }
     )
   }
 }

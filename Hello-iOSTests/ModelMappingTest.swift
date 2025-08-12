@@ -106,7 +106,7 @@ private func makeDomainSample() -> (DomainCategories, DomainCategories) {
   let qna102a = DomainQnA(id: 1003, conceptId: 102, question: "Q-102-1", answer: "A-102-1", latestUpdate: Date())
   let c102 = DomainConcept(id: 102, categoryId: 1, concept: "C102", explain: "E102", latestUpdate: Date(), isMemory: true, qnas: [qna102a])
 
-  let cat1 = DomainCategories(id: 1, category: "iOS", concepts: [c101, c102], latestUpdate: Date())
+  let cat1 = DomainCategories(id: 1, category: "iOS", concepts: [c101, c102])
 
   // Category 2
   let qna201a = DomainQnA(id: 2001, conceptId: 201, question: "Q-201-1", answer: "A-201-1", latestUpdate: Date())
@@ -115,7 +115,7 @@ private func makeDomainSample() -> (DomainCategories, DomainCategories) {
   let qna202a = DomainQnA(id: 2002, conceptId: 202, question: "Q-202-1", answer: "A-202-1", latestUpdate: Date())
   let c202 = DomainConcept(id: 202, categoryId: 2, concept: "C202", explain: "E202", latestUpdate: Date(), isMemory: false, qnas: [qna202a])
 
-  let cat2 = DomainCategories(id: 2, category: "CS", concepts: [c201, c202], latestUpdate: Date())
+  let cat2 = DomainCategories(id: 2, category: "CS", concepts: [c201, c202])
   return (cat1, cat2)
 }
 

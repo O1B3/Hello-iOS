@@ -1,3 +1,4 @@
+
 import Foundation
 import RealmSwift
 
@@ -28,10 +29,6 @@ protocol RealmServiceType {
   func update<T: Object>(_ type: T.Type, forPrimaryKey key: Any, _ apply: (T) -> Void) throws
   /// PK가 없거나 일괄 수정이 필요할 때 predicate로 찾아 업데이트
   func updateAll<T: Object>(_ type: T.Type, predicate: NSPredicate, _ apply: (T) -> Void) throws
-
-  // Upsert
-  func upsert<T: Object>(_ object: T) throws
-  func upsert<T: Object>(_ objects: [T]) throws
   
   // Delete
   func delete<T: Object>(_ object: T) throws
@@ -138,17 +135,6 @@ final class RealmService: RealmServiceType {
     guard !targets.isEmpty else { throw RealmServiceError.objectNotFound }
     try realm.write { targets.forEach(apply) }
   }
-
-  // MARK: - Upsert
-  func upsert<T: Object>(_ object: T) throws {
-    // .modified 정책은 PK를 기준으로 객체가 존재하면 업데이트, 없으면 추가합니다.
-    // PK가 없는 타입에 대해서는 Realm이 예외를 발생시키므로, 호출부에서 PK가 있는 모델에만 사용해야 합니다.
-    try write { $0.add(object, update: .modified) }
-  }
-
-  func upsert<T: Object>(_ objects: [T]) throws {
-    try write { $0.add(objects, update: .modified) }
-  }
   
   // MARK: - Delete
   func delete<T: Object>(_ object: T) throws {
@@ -163,3 +149,4 @@ final class RealmService: RealmServiceType {
     }
   }
 }
+

@@ -6,8 +6,7 @@ struct DomainCategories: Hashable {
   let id: Int
   let category: String
   let concepts: [DomainConcept]
-  let latestUpdate: Date
-
+  
   // hashable 기준 id
   func hash(into hasher: inout Hasher) {
     hasher.combine(id)
