@@ -19,20 +19,35 @@ final class RecordGroupCell: UICollectionViewCell {
     $0.textColor = .secondaryLabel
   }
   
+  private let shadowView = ShadowView()
+  
+  private let cardView = UIView().then { // 실제 배경/코너 전용
+    $0.layer.cornerRadius = 12
+    $0.layer.masksToBounds = true
+    $0.backgroundColor = UIColor.sub20
+  }
+  
+  
   override init(frame: CGRect) {
     super.init(frame: frame)
     
-    let stack = UIStackView(arrangedSubviews: [titleLabel, textLabel, subtitleLabel]).then {
+    let stackView = UIStackView(arrangedSubviews: [titleLabel, textLabel, subtitleLabel]).then {
       $0.axis = .vertical
       $0.spacing = 4
     }
-    contentView.addSubview(stack)
-    stack.snp.makeConstraints {
-      $0.edges.equalToSuperview().inset(12)
-    }
     
-    contentView.backgroundColor = .sub
-    contentView.layer.cornerRadius = 8
+    contentView.addSubview(shadowView)
+    shadowView.addSubview(cardView)
+    cardView.addSubview(stackView)
+    
+    contentView.backgroundColor = .clear
+    contentView.layer.cornerRadius = 0
+    
+    shadowView.snp.makeConstraints { $0.edges.equalToSuperview() }         // 그림자 영역
+    cardView.snp.makeConstraints { $0.edges.equalToSuperview() }           // 카드가 그림자 위에 꽉 차게
+    stackView.snp.makeConstraints { $0.edges.equalToSuperview().inset(12) }    // 인셋
+    
+    
   }
   
   @available(*, unavailable)

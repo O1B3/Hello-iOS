@@ -40,7 +40,7 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
   // 캘린더 영역
   private let calendarView = MyCalenderView()
   
-  private let calendarContainerView = UIView().then {
+  private let calendarContainerView = ShadowView().then {
     $0.backgroundColor = .secondarySystemBackground
     $0.layer.cornerRadius = 16
   }
@@ -56,6 +56,8 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
       return newAttr
     }
   }
+  
+  private let shadowView = ShadowView()
   
   // 스크롤 뷰
   private let scrollView = UIScrollView()
@@ -118,6 +120,7 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
     contentView.addSubview(expBarExpLabelStack)
     contentView.addSubview(attendanceLabel)
     contentView.addSubview(calendarContainerView)
+    contentView.addSubview(shadowView)
     contentView.addSubview(recordButton)
     
     // 캘린더 뷰 관련 주입요소
@@ -158,6 +161,10 @@ final class MyPageInfoViewController: BaseViewController<MyPageInfoReactor> {
     
     calendarView.snp.makeConstraints {
       $0.edges.equalToSuperview().inset(8)
+    }
+    
+    shadowView.snp.makeConstraints{
+      $0.directionalEdges.equalTo(recordButton)
     }
     
     recordButton.snp.makeConstraints {

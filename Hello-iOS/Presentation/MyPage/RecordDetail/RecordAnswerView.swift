@@ -6,11 +6,11 @@ final class RecordAnswerView: UIView {
   private let model = UILabel()
   private let mine  = UILabel()
   private let stackView = UIStackView()
+  private let shadowView = ShadowView()
   
   init(item: MockInterviewRecord) {
     super.init(frame: .zero)
     layer.cornerRadius = 12
-    clipsToBounds = true
     
     [question, model, mine].forEach {
       $0.numberOfLines = 0
@@ -23,15 +23,18 @@ final class RecordAnswerView: UIView {
     stackView.isLayoutMarginsRelativeArrangement = true
     stackView.layoutMargins = .init(top: 12, left: 12, bottom: 12, right: 12)
     
+    addSubview(shadowView)
     addSubview(stackView)
+    
+    shadowView.snp.makeConstraints{ $0.edges.equalToSuperview() }
     stackView.snp.makeConstraints { $0.edges.equalToSuperview() }
     [question, model, mine].forEach(stackView.addArrangedSubview)
 
     question.text = "질문 : \n " + item.question
     model.text = "모법 답안 : \n" + item.modelAnswer
     mine.text  = "내 답안 : \n" + item.myAnswer
-    backgroundColor = (item.isSatisfied ? UIColor.correct : UIColor.wrong )
-      .withAlphaComponent(0.20)
+    
+    shadowView.backgroundColor = (item.isSatisfied ? UIColor.correct20 : UIColor.wrong20 )
     
   }
 

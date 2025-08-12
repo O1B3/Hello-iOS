@@ -36,6 +36,7 @@ final class MyRecordsViewController: BaseViewController<MyRecordsReactor> {
   }
   
   override func setupUI() {
+    
     navigationItem.title = "모의 면접 기록"
     navigationItem.rightBarButtonItem = UIBarButtonItem(customView: clearAllButton)
     
