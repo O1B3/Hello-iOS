@@ -1,9 +1,3 @@
-//
-//  InterviewRoomReactor.swift
-//  Hello-iOS
-//
-//  Created by 이태윤 on 8/7/25.
-//
 import Foundation
 
 import ReactorKit
@@ -70,18 +64,33 @@ InterviewRoomReactor.State
         switch interviewMode {
         case .myStudy(let categoryIDs):
           return Single<[DomainQnA]>.create { single in
-            let task = Task {
-              do {
-                let all = try await self.learningService.requestAllData() // 전체 로드
-                let domains = all.map { $0.toDomain() }                   // Domain 변환
-                let filtered = domains.filter { categoryIDs.contains($0.id) }
-                let qnas = filtered.flatMap { $0.concepts }.flatMap { $0.qnas } // 평탄화
-                single(.success(qnas))
-              } catch {
-                single(.failure(error))
-              }
+            do {
+              // 선택된 카테고리만 조회
+              let predicate = NSPredicate(format: "id IN %@", categoryIDs)
+              let realmCategories = try self.realmService.fetch(
+                RealmCategory.self,
+                predicate: predicate,
+                sorted: []
+              )
+
+              // 학습한 데이터만 필터
+              let memorizedConcepts: [RealmConcept] = realmCategories
+                .flatMap { $0.concepts }
+                .filter { $0.isMemory }
+
+              // 컨셉들의 QnA를 평탄화 → Domain으로 매핑
+              var qnas: [DomainQnA] = memorizedConcepts
+                .flatMap { $0.qnas }
+                .map { $0.toDomain() }
+
+              // 랜덤으로 최대 10개
+              qnas = Array(qnas.shuffled().prefix(10))
+
+              single(.success(qnas))
+            } catch {
+              single(.failure(error))
             }
-            return Disposables.create { task.cancel() } // 구독 해제 시 취소
+            return Disposables.create()
           }
           .map { Mutation.setMyStudyQnAs($0) }
           .asObservable()
