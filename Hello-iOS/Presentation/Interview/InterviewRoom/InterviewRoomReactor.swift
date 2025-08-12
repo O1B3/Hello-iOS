@@ -4,9 +4,13 @@
 //
 //  Created by 이태윤 on 8/7/25.
 //
+import Foundation
+
 import ReactorKit
 import RxSwift
 import Speech
+import RealmSwift
+import RxRealm
 
 final class InterviewRoomReactor: BaseReactor<
 InterviewRoomReactor.Action,
@@ -32,7 +36,12 @@ InterviewRoomReactor.State
   }
 
   // 생성자에서 초기 상태 설정
-  init() {
+  let interviewMode: InterviewMode
+  let realmService: RealmServiceType
+  
+  init(realmService: RealmServiceType, interviewMode: InterviewMode) {
+    self.realmService = realmService
+    self.interviewMode = interviewMode
     super.init(initialState: State())
   }
 

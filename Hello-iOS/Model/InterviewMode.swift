@@ -6,6 +6,6 @@
 //
 // 모의면접 모드
 enum InterviewMode {
-  case myStudy
-  case review
+  case myStudy([Int])
+  case review([MockInterviewRecord])
 }

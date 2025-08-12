@@ -4,8 +4,12 @@
 //
 //  Created by 이태윤 on 8/6/25.
 //
+import Foundation
+
 import ReactorKit
+import RealmSwift
 import RxSwift
+import RxRealm
 
 final class InterviewReactor: BaseReactor<
 InterviewReactor.Action,
@@ -16,20 +20,25 @@ InterviewReactor.State
   // 사용자 액션 정의 (사용자의 의도)
   enum Action {
     case selectInterviewMode(InterviewMode)
+    case fetchInterviewRecord
   }
 
   // 상태변경 이벤트 정의 (상태를 어떻게 바꿀 것인가)
   enum Mutation {
     case setMode(InterviewMode)
+    case setReviewAvailable(Bool)
   }
 
   // View의 상태 정의 (현재 View의 상태값)
   struct State {
     @Pulse var selectedMode: InterviewMode?
+    var isReviewAvailable: Bool = false
   }
 
-  // 생성자에서 초기 상태 설정
-  init() {
+  let realmService: RealmServiceType
+
+  init(realmService: RealmServiceType) {
+    self.realmService = realmService
     super.init(initialState: State())
   }
 
@@ -39,6 +48,27 @@ InterviewReactor.State
     switch action {
     case .selectInterviewMode(let mode):
       return .just(.setMode(mode))
+    case .fetchInterviewRecord:
+      guard let results = try? realmService.fetch(
+        RealmMockInterviewGroup.self,
+        predicate: nil,
+        sorted: [SortDescriptor(keyPath: "date", ascending: false)]
+      ) else {
+        return .empty()
+      }
+
+      return Observable.collection(from: results)
+        .map { newResults in
+          // Realm 객체 -> 도메인 변환
+          let groups = newResults.map { $0.toDomain() }
+
+          // 불만족 데이터가 1개 이상 있는지 판단
+          let hasAnyUnsatisfied = groups.contains { group in
+            group.records.contains { !$0.isSatisfied }
+          }
+
+          return .setReviewAvailable(hasAnyUnsatisfied)
+        }
     }
   }
 
@@ -49,6 +79,8 @@ InterviewReactor.State
     switch mutation {
     case .setMode(let mode):
       newState.selectedMode = mode
+    case .setReviewAvailable(let flag):
+      newState.isReviewAvailable = flag
     }
     return newState
   }
