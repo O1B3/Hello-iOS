@@ -18,6 +18,10 @@ class WordLearningView: UIView {
     $0.isHidden = true
   }
 
+  let reulstView = WordResultView().then {
+    $0.isHidden = true
+  }
+
   override init(frame: CGRect) {
     super.init(frame: frame)
     self.backgroundColor = .background
@@ -31,6 +35,7 @@ class WordLearningView: UIView {
   private func setupUI() {
     addSubview(cardStack)
     addSubview(addContentView)
+    addSubview(reulstView)
 
     cardStack.snp.makeConstraints {
       $0.top.equalTo(self.safeAreaLayoutGuide).offset(45)
@@ -43,6 +48,12 @@ class WordLearningView: UIView {
       $0.centerX.equalToSuperview()
       $0.width.equalToSuperview().multipliedBy(0.8)
       $0.height.equalTo(addContentView.snp.width).multipliedBy(1.5)
+    }
+
+    reulstView.snp.makeConstraints {
+      $0.top.equalTo(self.safeAreaLayoutGuide)
+      $0.leading.trailing.equalTo(self.safeAreaLayoutGuide).inset(30)
+      $0.bottom.equalTo(self.safeAreaLayoutGuide)
     }
   }
 
