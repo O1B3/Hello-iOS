@@ -43,11 +43,11 @@ class WordBookReactor: BaseReactor<
       guard let results = try? realmService.fetch(
         RealmCategory.self,
         predicate: nil,
-        sorted: [SortDescriptor(keyPath: "id", ascending: false)]
+        sorted: [SortDescriptor(keyPath: "id", ascending: true)]
       ) else {
         return .empty()
       }
-      
+
       return Observable.collection(from: results)
         .map { newResults in
           let domainBooks = newResults.map { $0.toDomain() }

@@ -17,12 +17,14 @@ final class WordBookView: UIView {
     frame: .zero,
     collectionViewLayout: makeCollectionViewLayout()).then {
       $0.showsVerticalScrollIndicator = false
+      $0.backgroundColor = .background
     }
 
   override init(frame: CGRect) {
     super.init(frame: frame)
 
     setupUI()
+    self.backgroundColor = .background
   }
 
   required init?(coder: NSCoder) {

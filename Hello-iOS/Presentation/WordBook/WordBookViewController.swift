@@ -18,7 +18,7 @@ class WordBookViewController: BaseViewController<WordBookReactor> {
     super.init(nibName: nil, bundle: nil)
     self.reactor = reactor
   }
-  
+
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
@@ -34,10 +34,16 @@ class WordBookViewController: BaseViewController<WordBookReactor> {
   override func bind(reactor: WordBookReactor) {
     wordBookView.collectionView.rx.itemSelected
       .subscribe(onNext: { [weak self] indexPath in
-        let container = DIContainer.shared
-        let vc: WordLearningViewController = container.resolve()
+        if reactor.currentState.wordBooks[indexPath.item].concepts.count > 0 {
+          let continer = DIContainer.shared
+          let vc = WordLearningViewController(reactor: WordLearningReactor(
+            realmService: continer.resolve(),
+              concepts: reactor.currentState.wordBooks[indexPath.item].concepts
+            )
+          )
 
-        self?.navigationController?.pushViewController(vc, animated: true)
+          self?.navigationController?.pushViewController(vc, animated: true)
+        }
       })
       .disposed(by: disposeBag)
 
@@ -45,15 +51,16 @@ class WordBookViewController: BaseViewController<WordBookReactor> {
       .viewDidLoad
       .subscribe(onNext: { _ in reactor.action.onNext(.fetchWordBook) })
       .disposed(by: disposeBag)
-    
+
     reactor
-        .state
-        .bind { [weak dataSource = wordBookView.dataSource] item in
-          var snapshot = NSDiffableDataSourceSnapshot<Int, DomainCategories>()
-            snapshot.appendSections([0])
-          snapshot.appendItems(item.wordBooks, toSection: 0)
-          dataSource?.apply(snapshot, animatingDifferences: true)
-        }
-        .disposed(by: disposeBag)
+      .state
+      .bind { [weak dataSource = wordBookView.dataSource] item in
+        var snapshot = NSDiffableDataSourceSnapshot<Int, DomainCategories>()
+        snapshot.appendSections([0])
+        snapshot.appendItems(item.wordBooks, toSection: 0)
+        snapshot.reconfigureItems(item.wordBooks)
+        dataSource?.apply(snapshot, animatingDifferences: true)
+      }
+      .disposed(by: disposeBag)
   }
 }
