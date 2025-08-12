@@ -75,7 +75,7 @@ class SelectionInterviewViewController: BaseViewController<SelectionInterviewRea
 //                                 ])
   }
 
-  override func bind(reactor _: SelectionInterviewReactor) {
+  override func bind(reactor: SelectionInterviewReactor) {
     wordBookView.collectionView.rx.itemSelected
       .subscribe(onNext: { indexPath in
         guard let cell = self.wordBookView.collectionView.cellForItem(at: indexPath) else { return }
@@ -93,6 +93,20 @@ class SelectionInterviewViewController: BaseViewController<SelectionInterviewRea
         print("선택해제 셀 : \(indexPath)")
       })
       .disposed(by: disposeBag)
+
+    self.rx
+      .viewDidLoad
+      .subscribe(onNext: { _ in reactor.action.onNext(.fetchWordBook) })
+      .disposed(by: disposeBag)
+
+    reactor.state
+        .bind { [weak dataSource = wordBookView.dataSource] item in
+          var snapshot = NSDiffableDataSourceSnapshot<Int, DomainCategories>()
+            snapshot.appendSections([0])
+          snapshot.appendItems(item.wordBooks, toSection: 0)
+          dataSource?.apply(snapshot, animatingDifferences: true)
+        }
+        .disposed(by: disposeBag)
 
     doneButton.rx.tap
       .withUnretained(self)

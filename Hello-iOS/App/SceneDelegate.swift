@@ -64,9 +64,13 @@ extension SceneDelegate {
     // 면접 VC
     container.register(ResultInterviewViewController(reactor: ResultInterviewReactor()))
     container.register(InterviewRoomViewController(reactor: InterviewRoomReactor()))
-    container.register(SelectionInterviewViewController(reactor: SelectionInterviewReactor()))
     container
-      .register(InterviewViewController(reactor: InterviewReactor(realmService: RealmService()))
+      .register(
+        SelectionInterviewViewController(reactor: SelectionInterviewReactor(realmService: RealmService()) )
+      )
+    container
+      .register(
+        InterviewViewController(reactor: InterviewReactor(realmService: RealmService()))
       )
     container.register(WordBookReactor(realmService: RealmService()))
     container.register(WordBookViewController(reactor: container.resolve()))
