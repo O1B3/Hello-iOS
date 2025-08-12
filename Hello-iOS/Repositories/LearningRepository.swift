@@ -82,14 +82,16 @@ class LearningRepository: LearningRepositoryProtocol {
   }
 
   func fetchLatestUpdateTime() async throws -> Date {
-    var date = [Date]()
+    struct UpdateTime: Decodable {
+      let time: Date
+    }
 
-    date = try await client
+    let date: [UpdateTime] = try await client
       .from("Recently_update_time")
       .select("*")
       .execute()
       .value
 
-    return date.first ?? Date()
+    return date.first?.time ?? Date()
   }
 }
