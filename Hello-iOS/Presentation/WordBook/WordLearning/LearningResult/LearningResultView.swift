@@ -19,7 +19,7 @@ final class WordResultView: UIView {
 
   let ringView =  RingView().then {
     $0.centerLabel.textColor = .label
-
+    $0.centerLabel.font = .systemFont(ofSize: 48, weight: .thin)
     $0.progressColor = .main
   }
 
