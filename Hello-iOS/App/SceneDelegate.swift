@@ -58,7 +58,6 @@ extension SceneDelegate {
     let container = DIContainer.shared
 
     // 면접 VC
-    container.register(ResultInterviewViewController(reactor: ResultInterviewReactor()))
     container
       .register(
         SelectionInterviewViewController(reactor:

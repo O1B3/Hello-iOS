@@ -92,7 +92,7 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
     reactor.pulse(\.$selectedMode)
       .compactMap { $0 }
       .withLatestFrom(reactor.state.map { $0.isReviewAvailable }) { ($0, $1) }
-      .bind { [weak self] mode, isAvailable in
+      .bind { [weak self] (mode: InterviewMode , isAvailable: Bool) in
         guard let self else { return }
         switch mode {
         case .myStudy:
@@ -104,7 +104,11 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
           // 데이터가 있다면 면접실로 이동하고 없으면 알림창 띄우기
           if isAvailable {
             let interviewRoomVC = InterviewRoomViewController(
-              reactor: InterviewRoomReactor(realmService: RealmService(), interviewMode: mode)
+              reactor: InterviewRoomReactor(
+                realmService: RealmService(),
+                interviewMode: mode,
+                learningService: container.resolve()
+              )
             )
             navigationController?.pushViewController(interviewRoomVC, animated: true)
           } else {

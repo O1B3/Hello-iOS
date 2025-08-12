@@ -21,27 +21,34 @@ InterviewRoomReactor.State
   enum Action {
     case toggleRecording
     case recognizedTextChanged(String)
+    case fetchQuestions
   }
 
   // 상태변경 이벤트 정의 (상태를 어떻게 바꿀 것인가)
   enum Mutation {
     case setRecording(Bool)
     case setRecognizedText(String)
+    case setMyStudyQnAs([DomainQnA])              //  myStudy 데이터
+    case setReviewRecords([MockInterviewRecord])  //  review 데이터
   }
 
   // View의 상태 정의 (현재 View의 상태값)
   struct State {
     var isRecording: Bool = false
     var recognizedText: String = ""
+    var myStudyQnAs: [DomainQnA] = []
+    var reviewRecords: [MockInterviewRecord] = []
   }
 
   // 생성자에서 초기 상태 설정
   let interviewMode: InterviewMode
   let realmService: RealmServiceType
-  
-  init(realmService: RealmServiceType, interviewMode: InterviewMode) {
+  let learningService: LearningService
+
+  init(realmService: RealmServiceType, interviewMode: InterviewMode, learningService: LearningService) {
     self.realmService = realmService
     self.interviewMode = interviewMode
+    self.learningService = learningService
     super.init(initialState: State())
   }
 
@@ -58,6 +65,32 @@ InterviewRoomReactor.State
       }
     case .recognizedTextChanged(let newText):
       return .just(.setRecognizedText(newText))
+    case .fetchQuestions:
+      let load: Observable<Mutation> = {
+        switch interviewMode {
+        case .myStudy(let categoryIDs):
+          return Single<[DomainQnA]>.create { single in
+            let task = Task {
+              do {
+                let all = try await self.learningService.requestAllData() // 전체 로드
+                let domains = all.map { $0.toDomain() }                   // Domain 변환
+                let filtered = domains.filter { categoryIDs.contains($0.id) }
+                let qnas = filtered.flatMap { $0.concepts }.flatMap { $0.qnas } // 평탄화
+                single(.success(qnas))
+              } catch {
+                single(.failure(error))
+              }
+            }
+            return Disposables.create { task.cancel() } // 구독 해제 시 취소
+          }
+          .map { Mutation.setMyStudyQnAs($0) }
+          .asObservable()
+
+        case .review(let records):
+          return .just(.setReviewRecords(records))
+        }
+      }()
+      return load
     }
   }
 
@@ -70,6 +103,10 @@ InterviewRoomReactor.State
       newState.isRecording = isRecording
     case .setRecognizedText(let recognizedText):
       newState.recognizedText = recognizedText
+    case .setMyStudyQnAs(let qnas):
+      newState.myStudyQnAs = qnas
+    case .setReviewRecords(let records):
+      newState.reviewRecords = records
     }
     return newState
   }

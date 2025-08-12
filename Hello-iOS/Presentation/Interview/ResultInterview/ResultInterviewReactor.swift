@@ -24,7 +24,11 @@ ResultInterviewReactor.State
   }
 
   // 생성자에서 초기 상태 설정
-  init() {
+  let realmService: RealmServiceType
+  let reslut: [MockInterviewRecord]
+  init(realmService: RealmServiceType, reslut: [MockInterviewRecord]) {
+    self.realmService = realmService
+    self.reslut = reslut
     super.init(initialState: State())
   }
 
