@@ -26,4 +26,19 @@ struct Hello_iOSTests {
 
     print(result)
   }
+
+  @Test func fetchLatestUpdateTime() async throws {
+    let repo = LearningRepository()
+
+    let result = try await repo.fetchLatestUpdateTime()
+
+    print(result)
+  }
+
+  @Test func isUpdateNeeded() async throws {
+    let repo = LearningRepository()
+    let result = try await LearningService(learningRepository: repo).isUpdateNeeded()
+
+    print(result)
+  }
 }

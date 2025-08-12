@@ -43,14 +43,12 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
     $0.numberOfLines = 0
     $0.backgroundColor = .clear
     $0.font = .systemFont(ofSize: 23, weight: .bold)
-    $0.text = "Array에 대해서 설명해주세요 Array에 대해서 설명해주세요 Array에 대해서 설명해주세요 Array에 대해서 설명해주세요."
   }
 
   private let interviewerImageView = UIImageView().then {
-    let config = UIImage.SymbolConfiguration(pointSize: 40, weight: .medium)
-    $0.image = UIImage(systemName: "person", withConfiguration: config)
+    $0.image = .interviewer
     $0.contentMode = .scaleAspectFit
-    $0.layer.cornerRadius = 50
+    $0.layer.cornerRadius = 75
     $0.tintColor = .main
     $0.backgroundColor = .card
     $0.clipsToBounds = true
@@ -88,6 +86,7 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    navigationItem.title = "모의 면접"
     setupUI()
     setConstraints()
   }
@@ -127,7 +126,7 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
     interviewerImageView.snp.makeConstraints {
       $0.top.equalTo(questionStackView.snp.bottom).offset(12)
       $0.centerX.equalToSuperview()
-      $0.height.width.equalTo(100)
+      $0.height.width.equalTo(150)
     }
 
     myAnswerTextView.snp.makeConstraints {
@@ -146,6 +145,15 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
     micButton.rx.tap
       .map { InterviewRoomReactor.Action.toggleRecording}
       .bind(to: reactor.action)
+      .disposed(by: disposeBag)
+
+    rightButton.rx.tap
+      .withUnretained(self)
+      .bind { owner, _ in
+        let container = DIContainer.shared
+        let ResultInterviewVC: ResultInterviewViewController = container.resolve()
+        owner.navigationController?.pushViewController(ResultInterviewVC, animated: true)
+      }
       .disposed(by: disposeBag)
 
     reactor.state

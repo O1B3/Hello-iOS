@@ -14,11 +14,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   
   func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
     guard let windowScene = (scene as? UIWindowScene) else { return }
+<<<<<<< HEAD
     
     window = UIWindow(windowScene: windowScene)
     window?.rootViewController = makeTabBarController()
     window?.makeKeyAndVisible()
     // TODO: 충돌 해결
+=======
+
+    registerObjects()
+    window = UIWindow(windowScene: windowScene)
+    window?.rootViewController = makeTabBarController()
+    window?.makeKeyAndVisible()
+    updateRecentlyData()
+>>>>>>> develop-copy
   }
   
   func sceneDidDisconnect(_ scene: UIScene) {
@@ -55,8 +64,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 extension SceneDelegate {
   func makeTabBarController() -> UITabBarController {
     let container = DIContainer.shared
+    container.register(WordLearningViewController())
+
+    // 면접 VC
+    container.register(ResultInterviewViewController(reactor: ResultInterviewReactor()))
+    container.register(InterviewRoomViewController(reactor: InterviewRoomReactor()))
+    container.register(SelectionInterviewViewController(reactor: SelectionInterviewReactor()))
     container.register(InterviewViewController(reactor: InterviewReactor()))
-    container.register(WordBookViewController())
 #if DEBUG
     container
       .register(
@@ -117,7 +131,54 @@ extension SceneDelegate {
     
     UINavigationBar.appearance().standardAppearance = topAppearance
     UINavigationBar.appearance().scrollEdgeAppearance = topAppearance
-    
+    UINavigationBar.appearance().tintColor = .main
+
     return tabBarController
+  }
+
+  func registerObjects() {
+    let container = DIContainer.shared
+
+    // WordLearning
+    container.register(type: LearningRepositoryProtocol.self, LearningRepository())
+    container.register(LearningService(learningRepository: container.resolve()))
+    container.register(WordLearningViewController())
+
+    // WordBook
+    container.register(WordBookReactor(realmService: RealmService()))
+    container.register(WordBookViewController(reactor: container.resolve()))
+  }
+
+  func updateRecentlyData() {
+    let container = DIContainer.shared
+    let learningService: LearningService = container.resolve()
+
+    Task {
+      do {
+        // 업데이트 필요 여부 확인
+        if try await learningService.isUpdateNeeded() {
+          // 데이터 업데이트 작업
+          /// 최신 데이터 요청
+          let recentlyData = try await learningService.requestRecentlyData()
+          /// 데이터 저장
+          saveData(data: recentlyData)
+          /// 데이터 갱신시간 등록
+          learningService.setLatestUpdateTimeNow()
+        }
+      } catch {
+        print("⚠️ SceneDelegate 데이터 업데이트 오류: \(error)")
+      }
+    }
+  }
+
+  func saveData(data: [Categories]) {
+    let realmService = RealmService()
+    let domainData = data.map { RealmCategory(from: $0.toDomain()) }
+
+    do {
+      try realmService.upsert(domainData)
+    } catch {
+      print("⚠️ SceneDelegate upsert 오류: \(error)")
+    }
   }
 }
