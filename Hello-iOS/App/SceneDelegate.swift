@@ -15,15 +15,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
     guard let windowScene = (scene as? UIWindowScene) else { return }
 
+    registerObjects()
     window = UIWindow(windowScene: windowScene)
-
-    let container = DIContainer.shared
-    container.register(ViewController(reactor: ViewReactor()))
-    let rootVC: ViewController = container.resolve()
-    let navController = UINavigationController(rootViewController: rootVC)
-
-    window?.rootViewController = navController
+    window?.rootViewController = makeTabBarController()
     window?.makeKeyAndVisible()
+    updateRecentlyData()
   }
 
   func sceneDidDisconnect(_ scene: UIScene) {
@@ -57,3 +53,134 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 }
 
+extension SceneDelegate {
+  func makeTabBarController() -> UITabBarController {
+    let container = DIContainer.shared
+
+    // 면접 VC
+    container
+      .register(
+        SelectionInterviewViewController(reactor:
+                                          SelectionInterviewReactor(realmService: container.resolve())
+                                        )
+      )
+    container
+      .register(
+        InterviewViewController(reactor:
+                                  InterviewReactor(realmService: container.resolve())
+                               )
+      )
+    container.register(WordBookViewController(reactor: container.resolve()))
+
+//#if DEBUG
+//    container
+//      .register(
+//        MyPageInfoViewController(reactor: MyPageInfoReactor(dataService: StubUserDataService()))
+//      )
+//    container.register(StubRecordDataService() as RecordDataServiceProtocol)
+//#else
+    container
+      .register(
+        MyPageInfoViewController(reactor: MyPageInfoReactor(dataService: FetchUserDataService()))
+      )
+    container.register(RealmRecordDataService() as RecordDataServiceProtocol)
+//#endif
+
+    let interviewVC: InterviewViewController = container.resolve()
+    let myPageVC: MyPageInfoViewController = container.resolve()
+
+    let wordBookVC: WordBookViewController = container.resolve()
+    let tabBarController = UITabBarController()
+
+    wordBookVC.tabBarItem = UITabBarItem(
+      title: "단어장",
+      image: UIImage(systemName: "book"),
+      tag: 0
+    )
+    
+    interviewVC.tabBarItem = UITabBarItem(
+      title: "면접보기",
+      image: UIImage(systemName: "magnifyingglass"),
+      tag: 1
+    )
+
+    myPageVC.tabBarItem = UITabBarItem(
+      title: "마이페이지",
+      image: UIImage(systemName: "person"),
+      tag: 2
+    )
+
+    tabBarController.viewControllers = [wordBookVC, interviewVC, myPageVC].map {
+      UINavigationController(rootViewController: $0)
+    }
+    tabBarController.tabBar.tintColor = .main
+
+    /// 하단 탭바의 경계션 표현
+    let appearance = UITabBarAppearance()
+    appearance.configureWithOpaqueBackground()
+    appearance.backgroundColor = .background
+    appearance.shadowColor = .lightGray
+    tabBarController.tabBar.standardAppearance = appearance
+    tabBarController.tabBar.scrollEdgeAppearance = tabBarController.tabBar.standardAppearance
+
+    /// 상단 네비게이션의 경계션 표현
+    let topAppearance = UINavigationBarAppearance()
+
+    topAppearance.configureWithOpaqueBackground()
+    topAppearance.backgroundColor = .background
+    topAppearance.titleTextAttributes = [.foregroundColor: UIColor.label]
+    topAppearance.shadowColor = UIColor.lightGray
+
+    UINavigationBar.appearance().standardAppearance = topAppearance
+    UINavigationBar.appearance().scrollEdgeAppearance = topAppearance
+    UINavigationBar.appearance().tintColor = .main
+
+    return tabBarController
+  }
+
+  func registerObjects() {
+    let container = DIContainer.shared
+
+    // WordLearning
+    container.register(type: LearningRepositoryProtocol.self, LearningRepository())
+    container.register(LearningService(learningRepository: container.resolve()))
+
+    // WordBook
+    container.register(type: RealmServiceType.self, RealmService())
+    container.register(WordBookReactor(realmService: container.resolve()))
+    container.register(WordBookViewController(reactor: container.resolve()))
+  }
+
+  func updateRecentlyData() {
+    let container = DIContainer.shared
+    let learningService: LearningService = container.resolve()
+
+    Task {
+      do {
+        // 업데이트 필요 여부 확인
+        if try await learningService.isUpdateNeeded() {
+          // 데이터 업데이트 작업
+          /// 최신 데이터 요청
+          let recentlyData = try await learningService.requestRecentlyData()
+          /// 데이터 저장
+          saveData(data: recentlyData)
+          /// 데이터 갱신시간 등록
+          learningService.setLatestUpdateTimeNow()
+        }
+      } catch {
+        print("⚠️ SceneDelegate 데이터 업데이트 오류: \(error)")
+      }
+    }
+  }
+
+  func saveData(data: [Categories]) {
+    let realmService = RealmService()
+    let domainData = data.map { RealmCategory(from: $0.toDomain()) }
+
+    do {
+      try realmService.upsert(domainData)
+    } catch {
+      print("⚠️ SceneDelegate upsert 오류: \(error)")
+    }
+  }
+}
