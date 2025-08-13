@@ -8,15 +8,15 @@ final class RecordGroupCell: UICollectionViewCell {
   
   private let titleLabel = UILabel().then {
     $0.font = .systemFont(ofSize: 16, weight: .semibold)
-    $0.textColor = .label
+    $0.textColor = .black
   }
   private let textLabel = UILabel().then {
     $0.font = .systemFont(ofSize: 16, weight: .semibold)
-    $0.textColor = .label
+    $0.textColor = .black
   }
   private let subtitleLabel = UILabel().then {
     $0.font = .systemFont(ofSize: 14)
-    $0.textColor = .secondaryLabel
+    $0.textColor = .systemGray
   }
   
   private let shadowView = ShadowView()
