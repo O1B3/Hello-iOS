@@ -1,11 +1,28 @@
 
 import UIKit
 
+import SnapKit
+import Then
+
+
 final class RecordAnswerView: UIView {
-  private let question = UILabel()
-  private let model = UILabel()
-  private let mine  = UILabel()
-  private let stackView = UIStackView()
+  private let question = UILabel().then{
+    $0.font = .systemFont(ofSize: 15, weight: .semibold)
+    $0.textColor = .black
+  }
+  private let model = UILabel().then {
+    $0.textColor = .black
+  }
+  private let mine  = UILabel().then {
+    $0.textColor = .black
+  }
+  private let stackView = UIStackView().then {
+    $0.axis = .vertical
+    $0.spacing = 8
+    $0.isLayoutMarginsRelativeArrangement = true
+    $0.layoutMargins = .init(top: 12, left: 12, bottom: 12, right: 12)
+  }
+  
   private let shadowView = ShadowView()
   
   init(item: MockInterviewRecord) {
@@ -16,13 +33,7 @@ final class RecordAnswerView: UIView {
       $0.numberOfLines = 0
       $0.lineBreakMode = .byWordWrapping
     }
-    question.font = .systemFont(ofSize: 15, weight: .semibold)
-    
-    stackView.axis = .vertical
-    stackView.spacing = 8
-    stackView.isLayoutMarginsRelativeArrangement = true
-    stackView.layoutMargins = .init(top: 12, left: 12, bottom: 12, right: 12)
-    
+
     addSubview(shadowView)
     addSubview(stackView)
     
