@@ -4,4 +4,4 @@
      alt="image" 
      width="360" 
      height="360" 
-     style="border-radius: 20px;" />
+     style="border-radius: 20%;" />
