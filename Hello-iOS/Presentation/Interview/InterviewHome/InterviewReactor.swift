@@ -27,12 +27,14 @@ InterviewReactor.State
   enum Mutation {
     case setMode(InterviewMode)
     case setReviewAvailable(Bool)
+    case setReviewQuestions([MockInterviewRecord])
   }
 
   // View의 상태 정의 (현재 View의 상태값)
   struct State {
     @Pulse var selectedMode: InterviewMode?
     var isReviewAvailable: Bool = false
+    var reviewQuestions: [MockInterviewRecord] = []
   }
 
   let realmService: RealmServiceType
@@ -48,6 +50,7 @@ InterviewReactor.State
     switch action {
     case .selectInterviewMode(let mode):
       return .just(.setMode(mode))
+
     case .fetchInterviewRecord:
       guard let results = try? realmService.fetch(
         RealmMockInterviewGroup.self,
@@ -58,16 +61,18 @@ InterviewReactor.State
       }
 
       return Observable.collection(from: results)
-        .map { newResults in
-          // Realm 객체 -> 도메인 변환
-          let groups = newResults.map { $0.toDomain() }
+        .map { $0.map { $0.toDomain() } }               // Realm → Domain 변환
+        .flatMap { groups -> Observable<Mutation> in
+          // 모든 기록 평탄화 후 불만족만 추출
+          let unsatisfied = groups.flatMap { $0.records }.filter { !$0.isSatisfied }
+          let picked = Array(unsatisfied.shuffled().prefix(10)) // 랜덤 최대 10개
+          let hasAny = !picked.isEmpty
 
-          // 불만족 데이터가 1개 이상 있는지 판단
-          let hasAnyUnsatisfied = groups.contains { group in
-            group.records.contains { !$0.isSatisfied }
-          }
-
-          return .setReviewAvailable(hasAnyUnsatisfied)
+          // 두 개의 뮤테이션을 순차적으로 방출
+          return Observable.concat([
+            .just(.setReviewAvailable(hasAny)),
+            .just(.setReviewQuestions(picked))
+          ])
         }
     }
   }
@@ -81,6 +86,8 @@ InterviewReactor.State
       newState.selectedMode = mode
     case .setReviewAvailable(let flag):
       newState.isReviewAvailable = flag
+    case .setReviewQuestions(let records):
+      newState.reviewQuestions = records
     }
     return newState
   }

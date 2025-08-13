@@ -26,6 +26,9 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
   // 순수 소리만 인식하는 오디오 엔진
   private let audioEngine = AVAudioEngine()
 
+  private let doneButton = UIBarButtonItem(title: "완료", style: .done, target: nil, action: nil).then {
+    $0.isEnabled = false
+  }
 
   private let questionStackView = UIStackView().then {
     $0.axis = .horizontal
@@ -38,7 +41,7 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
     $0.clipsToBounds = true
   }
 
-  private let questionLable = UILabel().then {
+  private let questionLabel = UILabel().then {
     $0.textColor = .label
     $0.numberOfLines = 0
     $0.backgroundColor = .clear
@@ -58,6 +61,9 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
     $0.textColor = .label
     $0.backgroundColor = .clear
     $0.font = .systemFont(ofSize: 23, weight: .medium)
+    $0.backgroundColor = .card
+    $0.isEditable = false
+    $0.layer.cornerRadius = 12
   }
 
   private let micStackView = UIStackView().then {
@@ -87,6 +93,8 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
   override func viewDidLoad() {
     super.viewDidLoad()
     navigationItem.title = "모의 면접"
+    navigationItem.rightBarButtonItem = doneButton
+
     setupUI()
     setConstraints()
   }
@@ -104,7 +112,7 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
   override func setupUI() {
     [questionStackView, interviewerImageView, myAnswerTextView, micStackView].forEach { view.addSubview($0) }
     questionStackView.addArrangedSubview(verticalBar)
-    questionStackView.addArrangedSubview(questionLable)
+    questionStackView.addArrangedSubview(questionLabel)
     micStackView.addArrangedSubview(leftButton)
     micStackView.addArrangedSubview(micButton )
     micStackView.addArrangedSubview(rightButton)
@@ -124,7 +132,7 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
     }
 
     interviewerImageView.snp.makeConstraints {
-      $0.top.equalTo(questionStackView.snp.bottom).offset(12)
+      $0.top.equalTo(questionStackView.snp.bottom).offset(40)
       $0.centerX.equalToSuperview()
       $0.height.width.equalTo(150)
     }
@@ -137,23 +145,207 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
     micStackView.snp.makeConstraints {
       $0.top.equalTo(myAnswerTextView.snp.bottom).offset(12)
       $0.leading.trailing.equalToSuperview().inset(16)
+      $0.height.equalTo(120)
       $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(12)
     }
 
   }
   override func bind(reactor: InterviewRoomReactor) {
-    micButton.rx.tap
-      .map { InterviewRoomReactor.Action.toggleRecording}
+    // 화면 진입 시 질문 로드
+    rx.viewDidLoad
+      .map { InterviewRoomReactor.Action.fetchQuestions }
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
 
-    rightButton.rx.tap
-      .withUnretained(self)
-      .bind { owner, _ in
-        let container = DIContainer.shared
-        let ResultInterviewVC: ResultInterviewViewController = container.resolve()
-        owner.navigationController?.pushViewController(ResultInterviewVC, animated: true)
+    let currentIndex = BehaviorRelay<Int>(value: 0)   // 현재 보여주는 질문 인덱스
+    let answers = BehaviorRelay<[String]>(value: [])  // 질문별 답변 저장소
+
+    // 모드에 따라 질문 텍스트 배열을 스트림으로 준비
+    let questions: Observable<[String]> = {
+      switch reactor.interviewMode {
+      case .myStudy:
+        return reactor.state
+          .map { $0.myStudyQnAs.map { $0.question } }
+          .distinctUntilChanged()
+      case .review:
+        return reactor.state
+          .map { $0.reviewRecords.map { $0.question } }
+          .distinctUntilChanged()
       }
+    }().share(replay: 1, scope: .whileConnected)
+
+    // 데이터가 갱신되면 첫 질문을 보여주고 인덱스 초기화
+    questions
+      .subscribe(onNext: { [weak self] qs in
+        guard let self = self else { return }
+        currentIndex.accept(0) // 첫 질문부터
+        answers.accept(Array(repeating: "", count: qs.count)) // 질문 수만큼 빈 답변 배열
+        self.questionLabel.text = qs.first ?? "질문이 없습니다."
+        self.myAnswerTextView.text = "" // 첫 질문의 현재 답변 표시(초기엔 빈 문자열)
+      })
+      .disposed(by: disposeBag)
+
+    // 음성 인식 결과 → 현재 인덱스의 답변 저장 + 텍스트 반영
+    reactor.state
+      .map { $0.recognizedText }
+      .subscribe(onNext: { [weak self] text in
+        guard let self = self else { return }
+        self.myAnswerTextView.text = text // 화면 표시
+        var arr = answers.value   // 배열에 저장
+        let idx = currentIndex.value
+        if arr.indices.contains(idx) { arr[idx] = text }
+        answers.accept(arr)
+      })
+      .disposed(by: disposeBag)
+
+    // 왼쪽(이전)
+    leftButton.rx.tap
+      .withLatestFrom(Observable.combineLatest(currentIndex.asObservable(), questions))
+      .map { idx, qs in max(idx - 1, 0) }  // 음수 방지
+      .withLatestFrom(Observable.combineLatest(questions, answers.asObservable())) { newIdx, pair in
+        (newIdx, pair.0, pair.1) // (인덱스, 질문들, 답변들)
+      }
+      .subscribe(onNext: { [weak self] idx, qs, ans in
+        guard let self = self else { return }
+        currentIndex.accept(idx)
+        self.questionLabel.text = qs.indices.contains(idx) ? qs[idx] : ""
+        let saved = ans.indices.contains(idx) ? ans[idx] : ""
+        self.myAnswerTextView.text = saved
+        self.reactor?.action.onNext(.recognizedTextChanged(saved))
+      })
+      .disposed(by: disposeBag)
+
+    // 오른쪽(다음)
+    rightButton.rx.tap
+      .withLatestFrom(Observable.combineLatest(currentIndex.asObservable(), questions))
+      .map { idx, qs in min(idx + 1, max(qs.count - 1, 0)) }        // 상한 방지
+      .withLatestFrom(Observable.combineLatest(questions, answers.asObservable())) { newIdx, pair in
+        (newIdx, pair.0, pair.1)
+      }
+      .subscribe(onNext: { [weak self] idx, qs, ans in
+        guard let self = self else { return }
+        currentIndex.accept(idx)
+        self.questionLabel.text = qs.indices.contains(idx) ? qs[idx] : ""
+        let saved = ans.indices.contains(idx) ? ans[idx] : ""
+        self.myAnswerTextView.text = saved
+        self.reactor?.action.onNext(.recognizedTextChanged(saved))
+      })
+      .disposed(by: disposeBag)
+
+    // 좌/우 버튼 활성화 상태 (처음엔 왼쪽 비활성, 마지막엔 오른쪽 비활성)
+    Observable.combineLatest(
+      currentIndex.asObservable(),
+      questions.map { $0.count }.distinctUntilChanged(),
+      reactor.state.map { $0.isRecording }.distinctUntilChanged()
+    )
+    .observe(on: MainScheduler.instance)
+    .subscribe(onNext: { [weak self] idx, count, recording in
+      guard let self = self else { return }
+      self.leftButton.isEnabled = (idx > 0) && !recording
+      self.rightButton.isEnabled = (idx + 1 < count) && !recording
+    })
+    .disposed(by: disposeBag)
+
+    // --- Done 버튼 활성화: 마지막 페이지 && 모든 답변이 채워졌고 && 녹음 중 아님 ---
+    let allAnswered = Observable
+      .combineLatest(answers.asObservable(), questions.map { $0.count })
+      .map { arr, count in
+        guard arr.count == count, count > 0 else { return false }
+        return arr.allSatisfy { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+      }
+      .distinctUntilChanged()
+      .share(replay: 1, scope: .whileConnected)
+
+    Observable
+      .combineLatest(
+        currentIndex.asObservable(),
+        questions.map { $0.count }.distinctUntilChanged(),
+        reactor.state.map { $0.isRecording }.distinctUntilChanged(),
+        allAnswered
+      )
+      .subscribe(onNext: { [weak self] idx, count, recording, allOK in
+        guard let self = self else { return }
+        let isLast = (idx + 1 == count) && count > 0
+        self.doneButton.isEnabled = isLast && allOK && !recording
+      })
+      .disposed(by: disposeBag)
+
+    // Done 버튼 탭 시: 모든 답변 확인 후 진행 또는 알럿
+    doneButton.rx.tap
+      .withLatestFrom(Observable.combineLatest(
+        answers.asObservable(),
+        questions.map { $0.count },
+        currentIndex.asObservable(),
+        reactor.state.map { $0.isRecording }
+      ))
+      .subscribe(onNext: { [weak self] (arr: [String], count: Int, idx: Int, recording: Bool) in
+        guard let self = self else { return }
+        let trimmed = arr.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+        let unanswered = trimmed.enumerated().compactMap { i, t in t.isEmpty ? i : nil }
+
+        let allOK = (arr.count == count) && unanswered.isEmpty
+
+        // 녹음 중일 경우
+        guard !recording else {
+          self.presentSimpleAlert(title: "녹음 중", message: "녹음을 먼저 종료해주세요.")
+          return
+        }
+
+        guard allOK else {
+          let list = unanswered.map { "\($0 + 1)번" }.joined(separator: ", ")
+          self.presentSimpleAlert(title: "답변하지 않은 문제가 있어요", message: "\(list)을(를) 완료하고 다시 시도해주세요.")
+          return
+        }
+
+        // 모든 조건 통과시 결과 화면으로 이동
+        let container = DIContainer.shared
+        let realmService: RealmServiceType = container.resolve()
+        let newGroupId = UUID().uuidString
+
+        let records: [MockInterviewRecord]
+        switch reactor.interviewMode {
+        case .myStudy:
+          let qnas = self.reactor!.currentState.myStudyQnAs
+          records = qnas.enumerated().map { index, qna in
+            let myAnswer = (index < trimmed.count) ? trimmed[index] : ""
+            return MockInterviewRecord(
+              id: index,
+              groupId: newGroupId,
+              question: qna.question,
+              modelAnswer: qna.answer,
+              myAnswer: myAnswer,
+              isSatisfied: false
+            )
+          }
+
+        case .review:
+          let originalRecords = self.reactor!.currentState.reviewRecords
+          records = originalRecords.enumerated().map { index, record in
+            let myAnswer = (index < trimmed.count) ? trimmed[index] : record.myAnswer
+            return MockInterviewRecord(
+              id: record.id,
+              groupId: record.groupId,
+              question: record.question,
+              modelAnswer: record.modelAnswer,
+              myAnswer: myAnswer,
+              isSatisfied: record.isSatisfied
+            )
+          }
+        }
+
+        // 3) Result 화면의 Reactor 생성 후 VC에 주입해서 push
+        let resultReactor = ResultInterviewReactor(
+          realmService: realmService,
+          reslut: records
+        )
+        let resultVC = ResultInterviewViewController(reactor: resultReactor)
+        self.navigationController?.pushViewController(resultVC, animated: true)
+      })
+      .disposed(by: disposeBag)
+
+    micButton.rx.tap
+      .map { InterviewRoomReactor.Action.toggleRecording}
+      .bind(to: reactor.action)
       .disposed(by: disposeBag)
 
     reactor.state
@@ -169,8 +361,14 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
       .subscribe(onNext: { [weak self] isRecording in
         if isRecording {
           self?.startRecording()
+          let config = UIImage.SymbolConfiguration(pointSize: 40, weight: .medium)
+          self?.micButton.setImage(UIImage(systemName: "record.circle", withConfiguration: config), for: .normal)
+          self?.micButton.tintColor = .wrong
         } else {
           self?.stopRecording()
+          let config = UIImage.SymbolConfiguration(pointSize: 40, weight: .medium)
+          self?.micButton.setImage(UIImage(systemName: "mic", withConfiguration: config), for: .normal)
+          self?.micButton.tintColor = .main
         }
       })
       .disposed(by: disposeBag)
@@ -232,7 +430,7 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, when in
           self.recognitionRequest?.append(buffer)
         }
-        
+
         // 오디오 엔진 준비 및 시작
         self.audioEngine.prepare()
         do {
@@ -256,5 +454,11 @@ class InterviewRoomViewController: BaseViewController<InterviewRoomReactor> {
   private func stopRecording() {
     recognitionRequest?.endAudio() // 더 이상 오디오 입력을 받지 않도록 설정
     cleanupRecording()             // 녹음 정리
+  }
+
+  private func presentSimpleAlert(title: String, message: String) {
+    let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+    present(alert, animated: true, completion: nil)
   }
 }

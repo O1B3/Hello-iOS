@@ -91,25 +91,33 @@ class InterviewViewController: BaseViewController<InterviewReactor> {
 
     reactor.pulse(\.$selectedMode)
       .compactMap { $0 }
-      .withLatestFrom(reactor.state.map { $0.isReviewAvailable }) { ($0, $1) }
-      .bind { [weak self] mode, isAvailable in
+      .withLatestFrom(reactor.state) { ($0, $1) }     
+      .bind { [weak self] (mode: InterviewMode, state: InterviewReactor.State) in
         guard let self else { return }
         switch mode {
         case .myStudy:
-          let vc = SelectionInterviewViewController(
+          // 내 학습 기반 모의면접: 카테고리 선택 화면으로 이동
+          let selectionInterviewVC = SelectionInterviewViewController(
             reactor: SelectionInterviewReactor(realmService: container.resolve())
           )
-          navigationController?.pushViewController(vc, animated: true)
+          self.navigationController?.pushViewController(selectionInterviewVC, animated: true)
+
         case .review:
-          // 데이터가 있다면 면접실로 이동하고 없으면 알림창 띄우기
-          if isAvailable {
-            let interviewRoomVC = InterviewRoomViewController(
-              reactor: InterviewRoomReactor(realmService: RealmService(), interviewMode: mode)
-            )
-            navigationController?.pushViewController(interviewRoomVC, animated: true)
-          } else {
-            presentNoReviewAlert()
+          let isAvailable = state.isReviewAvailable
+          let picked = state.reviewQuestions
+          guard isAvailable, !picked.isEmpty else {
+            self.presentNoReviewAlert()
+            return
           }
+          let interviewMode: InterviewMode = .review(picked)
+          let interviewRoomVC = InterviewRoomViewController(
+            reactor: InterviewRoomReactor(
+              realmService: container.resolve(),
+              interviewMode: interviewMode,
+              learningService: container.resolve()
+            )
+          )
+          self.navigationController?.pushViewController(interviewRoomVC, animated: true)
         }
       }
       .disposed(by: disposeBag)

@@ -79,10 +79,16 @@ class SelectionInterviewViewController: BaseViewController<SelectionInterviewRea
     doneButton.rx.tap
       .withLatestFrom(reactor.state.map(\.selectedIDs))
       .withUnretained(self)
-      .bind { owner, selectedIDs in
+      .bind {
+        owner,
+        selectedIDs in
         let container = DIContainer.shared
         let InterviewRoomVC = InterviewRoomViewController(
-          reactor: InterviewRoomReactor(realmService: container.resolve(), interviewMode: .myStudy(Array(selectedIDs)))
+          reactor: InterviewRoomReactor(
+            realmService: container.resolve(),
+            interviewMode: .myStudy(Array(selectedIDs)),
+            learningService: LearningService(learningRepository: container.resolve())
+          )
         )
         print(selectedIDs)
         owner.navigationController?.pushViewController(InterviewRoomVC, animated: true)

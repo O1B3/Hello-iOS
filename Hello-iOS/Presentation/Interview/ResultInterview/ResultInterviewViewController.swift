@@ -112,11 +112,6 @@ class ResultInterviewViewController: BaseViewController<ResultInterviewReactor> 
     $0.layer.borderColor = UIColor.wrong.cgColor
   }
 
-  private let questions = [
-    ("질문 1", "모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1모범답안 1", "내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1내 답변 1"),
-    ("질문 2", "모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2모범답안 2", "내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2내 답변 2")
-  ]
-
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -195,38 +190,73 @@ class ResultInterviewViewController: BaseViewController<ResultInterviewReactor> 
     }
   }
 
-  override func bind(reactor _: ResultInterviewReactor) {
+  override func bind(reactor: ResultInterviewReactor) {
+    let currentIndex = reactor.state
+      .map(\.currentIndex)
+      .distinctUntilChanged()
+      .share(replay: 1)
+
     correctButton.rx.tap
-      .bind(with: self) { owner, _ in
-        owner.cardStack.swipe(.right, animated: true)
-      }
+      .withLatestFrom(currentIndex)
+      .do(onNext: { [weak self] _ in
+        self?.reactor?.action.onNext(.swipe(index: self?.reactor?.currentState.currentIndex ?? 0, satisfied: true))
+        self?.cardStack.swipe(.right, animated: true)
+      })
+      .subscribe()
       .disposed(by: disposeBag)
 
     wrongButton.rx.tap
-      .bind(with: self) { owner, _ in
-        owner.cardStack.swipe(.left, animated: true)
-      }
+      .withLatestFrom(currentIndex)
+      .do(onNext: { [weak self] _ in
+        self?.reactor?.action.onNext(.swipe(index: self?.reactor?.currentState.currentIndex ?? 0, satisfied: false))
+        self?.cardStack.swipe(.left, animated: true)
+      })
+      .subscribe()
       .disposed(by: disposeBag)
 
+    reactor.state
+      .subscribe(onNext: { [weak self] state in
+        guard let self = self else { return }
+        self.contentText.text = "\(state.satisfiedCount)"
+        self.wrongText.text = "\(state.unsatisfiedCount)"
+        self.ring.setCenterText("\(state.currentIndex)/\(state.totalCount)")
+        self.ring.setProgress(CGFloat(state.progress), animated: true)
+        self.doneButton.isEnabled = state.canSave
+      })
+      .disposed(by: disposeBag)
+
+    // 저장
     doneButton.rx.tap
-      .withUnretained(self)
-      .bind(with: self) { owner, _ in
-          if let nav = owner.navigationController {
-            // 현재 내비게이션 스택의 루트 화면으로 한 번에 복귀
+      .map { ResultInterviewReactor.Action.save }
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
+
+    // 저장 완료 시 알림 후 닫기
+    reactor.state
+      .map(\.isSaved)
+      .filter { $0 }
+      .take(1)
+      .subscribe(onNext: { [weak self] _ in
+        guard let self = self else { return }
+        let alert = UIAlertController(title: "저장 완료", message: "저장이 완료되었습니다.", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "확인", style: .default) { _ in
+          if let nav = self.navigationController {
             nav.popToRootViewController(animated: true)
           } else {
-            // 만약 모달로 떠 있었다면 모달 닫기
-            owner.presentingViewController?.dismiss(animated: true, completion: nil)
+            self.presentingViewController?.dismiss(animated: true)
           }
         }
-        .disposed(by: disposeBag)
+        alert.addAction(okAction)
+        self.present(alert, animated: true, completion: nil)
+      })
+      .disposed(by: disposeBag)
   }
 }
 
 extension ResultInterviewViewController: SwipeCardStackDataSource, SwipeCardStackDelegate {
   // 카드 수
   func numberOfCards(in cardStack: SwipeCardStack) -> Int {
-    return questions.count
+    return reactor?.currentState.records.count ?? 0
   }
 
   // 카드 셀 구성
@@ -236,31 +266,24 @@ extension ResultInterviewViewController: SwipeCardStackDataSource, SwipeCardStac
     card.layer.masksToBounds = true
     card.layer.shadowOpacity = 0.2
 
-    // 커스텀 내용 뷰 구성
     let view = ResultCardView()
-    let q = questions[index]
-    view.configure(question: q.0, modelAnswer: q.1, myAnswer: q.2)
+    if let items = reactor?.currentState.records, index >= 0, index < items.count {
+      let item = items[index]
+      view.configure(question: item.question, modelAnswer: item.modelAnswer, myAnswer: item.myAnswer)
+    }
 
     // 손가락 스와이프 비활성화 (버튼으로만 동작)
     card.panGestureRecognizer.isEnabled = false
-
     card.content = view
-
     return card
   }
 
   // 이벤트 처리
   func cardStack(_ cardStack: SwipeCardStack, didSwipeCardAt index: Int, with direction: SwipeDirection) {
     if direction == .left {
-      print("❌ \(questions[index].0) - 불만족")
+      print("❌ \(index) - 불만족")
     } else if direction == .right {
-      print("✅ \(questions[index].0) - 만족")
+      print("✅ \(index) - 만족")
     }
   }
-
-  func didSwipeAllCards(_ cardStack: SwipeCardStack) {
-    print("모든 카드 소진됨")
-    doneButton.isEnabled = true
-  }
-
 }
