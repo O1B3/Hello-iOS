@@ -36,6 +36,10 @@ class WordLearningViewController: BaseViewController<WordLearningReactor> {
     self.title = "개념 공부"
     setupNavigationBar()
   }
+    
+  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+      self.view.endEditing(true)
+  }
 
   private func setupNavigationBar() {
     let plusButton = UIBarButtonItem(
