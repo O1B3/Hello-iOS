@@ -72,19 +72,19 @@ extension SceneDelegate {
       )
     container.register(WordBookViewController(reactor: container.resolve()))
 
-#if DEBUG
-    container
-      .register(
-        MyPageInfoViewController(reactor: MyPageInfoReactor(dataService: StubUserDataService()))
-      )
-    container.register(StubRecordDataService() as RecordDataServiceProtocol)
-#else
+//#if DEBUG
+//    container
+//      .register(
+//        MyPageInfoViewController(reactor: MyPageInfoReactor(dataService: StubUserDataService()))
+//      )
+//    container.register(StubRecordDataService() as RecordDataServiceProtocol)
+//#else
     container
       .register(
         MyPageInfoViewController(reactor: MyPageInfoReactor(dataService: FetchUserDataService()))
       )
     container.register(RealmRecordDataService() as RecordDataServiceProtocol)
-#endif
+//#endif
 
     let interviewVC: InterviewViewController = container.resolve()
     let myPageVC: MyPageInfoViewController = container.resolve()
